@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aisha’s typing speed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root{
+  --bg:#0d1117; --bg2:#141b26; --card:#171f2d; --line:#263246;
+  --text:#e8edf5; --muted:#8a97ad; --accent:#2dd4a7; --accent-ink:#04261d;
+  --warn:#ff7a6b; --ok:#5eead4; --pending:#6b7a93; --fs:1.7rem;
+  --radius:18px;
+}
+:root[data-theme="light"]{
+  --bg:#f5f7fb; --bg2:#eaeff7; --card:#ffffff; --line:#d9e1ee;
+  --text:#18212f; --muted:#5d6b82; --accent:#0f9d7a; --accent-ink:#ffffff;
+  --warn:#d6402f; --ok:#0f9d7a; --pending:#8d99ad;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'League Spartan','Kalpurush','Hind Siliguri','Noto Sans Bengali',sans-serif;
+  background:radial-gradient(900px 500px at 15% -10%,rgba(45,212,167,.10),transparent 60%),var(--bg);
+  color:var(--text);min-height:100vh;line-height:1.6;
+}
+/* English font (forced) */
+body,button,input,select,dialog{font-family:'League Spartan','Kalpurush','Hind Siliguri','Noto Sans Bengali',sans-serif !important}
+/* Bengali font */
+.bn,.bn *:not(i){font-family:'League Spartan','SolaimanLipi','Kalpurush','Noto Sans Bengali','Amiri',sans-serif !important}
+i.fa-solid,i.fa-regular{font-family:"Font Awesome 6 Free" !important}
+i.fa-solid{font-weight:900}
+
+header{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+.bar{max-width:1080px;margin:auto;padding:12px 20px;display:flex;align-items:center;gap:16px;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.25rem}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+.tools{display:flex;gap:8px}
+.ibtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;transition:border-color .2s,transform .1s}
+.ibtn:hover{border-color:var(--accent);color:var(--accent)}
+.ibtn:active{transform:scale(.94)}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+main{max-width:1080px;margin:auto;padding:28px 20px 60px}
+.hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:700;line-height:1.25}
+.hero p{color:var(--muted);margin-top:6px;max-width:60ch}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0 14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;display:flex;gap:14px;align-items:center}
+.stat>i{font-size:1.3rem;color:var(--accent);width:26px;text-align:center}
+.stat small{color:var(--muted);font-size:.85rem;display:block}
+.stat b{font-size:1.8rem;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
+
+.opts{display:flex;flex-wrap:wrap;gap:10px 18px;margin-bottom:14px;align-items:center}
+.group{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.group>span{color:var(--muted);font-size:.9rem;margin-right:2px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--text);padding:5px 14px;border-radius:999px;cursor:pointer;font-size:.92rem;transition:all .2s}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.chip i{margin-right:5px}
+
+.progress{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:14px}
+.progress i{display:block;height:100%;background:var(--accent);transform-origin:left}
+
+.wc{color:var(--muted);font-size:.9rem;text-align:right;margin:-6px 2px 10px;font-variant-numeric:tabular-nums}
+.board{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;height:230px;overflow:hidden;position:relative;cursor:text}
+.board::after{content:"";position:absolute;inset:auto 0 0 0;height:50px;background:linear-gradient(transparent,var(--card));pointer-events:none}
+.cover{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:10px;background:color-mix(in srgb,var(--card) 70%,transparent);backdrop-filter:blur(5px);font-weight:600;color:var(--accent);opacity:0;pointer-events:none;transition:opacity .2s}
+.board.idle .cover{opacity:1}
+#words{font-size:var(--fs);line-height:calc(var(--fs)*1.45);color:var(--pending);transition:transform .15s ease}
+.w{display:inline-block;margin-right:.5em;padding:0 4px;border-radius:6px}
+.w.cur{background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--text);box-shadow:0 0 0 1.5px var(--accent)}
+.w.cur.err{background:color-mix(in srgb,var(--warn) 22%,transparent);box-shadow:0 0 0 1.5px var(--warn);color:var(--warn)}
+.w.ok{color:var(--ok)}
+.w.bad{color:var(--warn);text-decoration:underline wavy;text-underline-offset:5px}
+
+.input-row{display:flex;gap:12px;margin-top:16px;align-items:stretch}
+.typewrap{position:relative;flex:1}
+.typewrap>i{position:absolute;left:24px;top:50%;transform:translateY(-50%);font-size:1.4rem;color:var(--muted);transition:color .2s;pointer-events:none}
+.typewrap:focus-within>i{color:var(--accent)}
+.typewrap:has(.err)>i{color:var(--warn)}
+#typebox{width:100%;height:84px;border-radius:20px;border:2px solid var(--line);background:linear-gradient(180deg,var(--bg2),var(--card));color:var(--text);padding:0 24px 0 66px;font-size:1.9rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.18);transition:border-color .2s,box-shadow .2s}
+#typebox::placeholder{color:var(--muted);font-size:1.2rem;opacity:.8}
+#typebox:focus{border-color:var(--accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 20%,transparent),0 8px 24px rgba(0,0,0,.18)}
+#typebox.err{border-color:var(--warn);box-shadow:0 0 0 5px color-mix(in srgb,var(--warn) 20%,transparent)}
+.primary,.second{min-height:54px;padding:0 22px;border-radius:14px;font-weight:700;font-size:1rem;cursor:pointer;transition:transform .1s,filter .2s;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+.primary{border:0;background:var(--accent);color:var(--accent-ink)}
+.second{border:1px solid var(--line);background:var(--card);color:var(--text)}
+.primary:hover{filter:brightness(1.08)}.second:hover{border-color:var(--accent)}
+.primary:active,.second:active{transform:scale(.97)}
+.hint{color:var(--muted);font-size:.88rem;margin-top:10px}
+kbd{border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:.8rem;background:var(--bg2)}
+
+.result{display:none;margin-top:22px;background:var(--card);border:1px solid var(--accent);border-radius:var(--radius);padding:26px;animation:pop .35s ease}
+.result.show{display:block}
+@keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.result h2{font-size:1.5rem;color:var(--accent)}
+.result.fail{border-color:var(--warn)}
+.result.fail h2{color:var(--warn)}
+.badge{display:inline-flex;gap:6px;align-items:center;padding:4px 14px;border-radius:999px;background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);font-weight:600;margin:6px 6px 0 0}
+.badge.rec{background:#f5b94233;color:#f5b942}
+.big{display:flex;gap:30px;flex-wrap:wrap;margin:16px 0}
+.big b{font-size:2.6rem;line-height:1;color:var(--accent);display:block;font-variant-numeric:tabular-nums}
+.big small{color:var(--muted)}
+#chart{height:90px;margin:4px 0 18px;border-radius:12px;background:var(--bg2);padding:6px}
+#chart svg{width:100%;height:100%}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+
+section.info{margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.tile i{color:var(--accent);font-size:1.3rem;margin-bottom:8px;display:block}
+.tile h3{font-size:1.1rem;margin-bottom:6px}
+.tile p{color:var(--muted);font-size:.95rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-top:10px}
+summary{cursor:pointer;font-weight:600;display:flex;justify-content:space-between;align-items:center;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary i{transition:transform .2s;color:var(--muted)}
+details[open] summary i{transform:rotate(180deg)}
+details p{color:var(--muted);margin-top:8px}
+footer{border-top:1px solid var(--line);padding:24px 20px;text-align:center;color:var(--muted);font-size:.9rem}
+
+dialog{margin:auto;width:min(520px,92vw);border:1px solid var(--line);border-radius:var(--radius);background:var(--card);color:var(--text);padding:22px}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+.dh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.row{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.93rem}
+.row.head{color:var(--muted);font-size:.82rem}
+.empty{color:var(--muted);padding:18px 0;text-align:center}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--accent);color:var(--accent-ink);padding:10px 20px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:50}
+.toast.show{opacity:1;transform:translateX(-50%)}
+
+@media(max-width:760px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  section.info{grid-template-columns:1fr}
+  .board{height:200px;padding:18px}
+  .input-row{flex-direction:column}
+  #typebox{height:68px;font-size:1.5rem}
+  .bar{padding:10px 12px;gap:8px;flex-wrap:nowrap}
+  .brand{font-size:.98rem;gap:8px;min-width:0}
+  .brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .logo{width:32px;height:32px;flex:none}
+  .tools{gap:6px;flex:none}
+  .ibtn{width:36px;height:36px}
+}
+@media(max-width:380px){
+  .brand{font-size:.9rem}
+  .ibtn{width:32px;height:32px}
+  .tools{gap:4px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand"><div class="logo"><i class="fa-solid fa-keyboard"></i></div><span>Aisha’s typing speed</span></div>
+    <div class="tools">
+      <button class="ibtn" id="histBtn" title="ফলাফলের ইতিহাস" aria-label="ফলাফলের ইতিহাস"><i class="fa-solid fa-clock-rotate-left"></i></button>
+      <button class="ibtn" id="soundBtn" title="সাউন্ড" aria-label="সাউন্ড"><i class="fa-solid fa-volume-high"></i></button>
+      <button class="ibtn" id="fsBtn" title="ফুলস্ক্রিন" aria-label="ফুলস্ক্রিন"><i class="fa-solid fa-expand"></i></button>
+      <button class="ibtn" id="themeBtn" title="থিম" aria-label="থিম পরিবর্তন"><i class="fa-solid fa-circle-half-stroke"></i></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="hero bn">
+    <h1>বাংলা টাইপিং স্পিড টেস্ট</h1>
+    <p>আপনার গতি (WPM) আর নির্ভুলতা যাচাই করুন। টাইপ শুরু করলেই টাইমার চালু হবে।</p>
+  </div>
+
+  <div class="stats bn">
+    <div class="stat"><i class="fa-solid fa-hourglass-half"></i><div><small>সময়</small><b id="sTime">10:00</b></div></div>
+    <div class="stat"><i class="fa-solid fa-gauge-high"></i><div><small>WPM</small><b id="sWpm">0</b></div></div>
+    <div class="stat"><i class="fa-solid fa-bullseye"></i><div><small>নির্ভুলতা</small><b id="sAcc">100%</b></div></div>
+    <div class="stat"><i class="fa-solid fa-trophy"></i><div><small>সেরা WPM</small><b id="sBest">0</b></div></div>
+  </div>
+
+  <div class="opts bn">
+    <div class="group" id="durs"><span><i class="fa-regular fa-clock"></i> সময়:</span></div>
+    <div class="group" id="sets"><span><i class="fa-solid fa-book-open"></i> লেখা:</span></div>
+    <div class="group">
+      <button class="chip" id="shufBtn"><i class="fa-solid fa-shuffle"></i>এলোমেলো</button>
+      <button class="chip" id="fMinus" aria-label="ফন্ট ছোট"><i class="fa-solid fa-minus"></i></button>
+      <button class="chip" id="fPlus" aria-label="ফন্ট বড়"><i class="fa-solid fa-plus"></i></button>
+    </div>
+  </div>
+  <div class="progress"><i id="bar" style="width:100%"></i></div>
+  <div class="wc bn" id="wc"></div>
+
+  <div class="board idle" id="board"><div class="cover bn"><i class="fa-solid fa-hand-pointer"></i> টাইপ করতে ক্লিক করুন</div><div id="words" class="bn"></div></div>
+
+  <div class="input-row">
+    <div class="typewrap">
+      <i class="fa-solid fa-pen-nib"></i>
+      <input id="typebox" class="bn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="হাইলাইট শব্দ টাইপ করুন…">
+    </div>
+    <button class="second bn" id="pauseBtn"><i class="fa-solid fa-pause"></i> বিরতি</button>
+    <button class="primary bn" id="restart"><i class="fa-solid fa-rotate-right"></i> রিস্টার্ট</button>
+  </div>
+  <p class="hint bn"><i class="fa-regular fa-keyboard"></i> প্রতিটি শব্দের পর <kbd>Space</kbd> বা <kbd>Enter</kbd> চাপুন। রিস্টার্ট: <kbd>Esc</kbd> বা <kbd>Tab</kbd> + <kbd>Enter</kbd>।</p>
+
+  <div class="result bn" id="result" role="status">
+    <h2 id="rTitle"></h2>
+    <span class="badge"><i class="fa-solid fa-medal"></i><span id="rLevel"></span></span><span class="badge rec" id="rRec" hidden><i class="fa-solid fa-crown"></i>নতুন রেকর্ড!</span>
+    <div class="big">
+      <div><b id="rWpm">0</b><small>WPM</small></div>
+      <div><b id="rAcc">0%</b><small>নির্ভুলতা</small></div>
+      <div><b id="rWords">0</b><small><i class="fa-solid fa-check"></i> সঠিক শব্দ</small></div>
+      <div><b id="rWrong">0</b><small><i class="fa-solid fa-xmark"></i> ভুল শব্দ</small></div>
+    </div>
+    <div id="chart" aria-label="গতির গ্রাফ"></div>
+    <div class="acts">
+      <button class="primary" id="again"><i class="fa-solid fa-rotate-right"></i> আবার চেষ্টা করুন</button>
+      <button class="second" id="copyBtn"><i class="fa-regular fa-copy"></i> ফলাফল কপি</button>
+    </div>
+  </div>
+
+  <section class="info bn">
+    <div class="tile"><i class="fa-solid fa-bullseye"></i><h3>নির্ভুলতা আগে</h3><p>প্রথমে ভুল কমান, গতি আপনাআপনি বাড়বে। ভুল শব্দ লাল রঙে দেখাবে।</p></div>
+    <div class="tile"><i class="fa-solid fa-wave-square"></i><h3>ছন্দ বজায় রাখুন</h3><p>থেমে থেমে নয়, একই তালে টাইপ করুন। দীর্ঘ টেস্টে স্ট্যামিনা তৈরি হয়।</p></div>
+    <div class="tile"><i class="fa-solid fa-language"></i><h3>রেফ ও যুক্তবর্ণ</h3><p>র + ্ + পরের ব্যঞ্জনবর্ণ লিখলে রেফ তৈরি হবে। যুক্তাক্ষর সঠিক ক্রমে টাইপ করুন।</p></div>
+  </section>
+
+  <div class="bn" style="margin-top:30px">
+    <details><summary>দশ মিনিটের টেস্টে কত WPM ভালো? <i class="fa-solid fa-chevron-down"></i></summary><p>নতুনদের জন্য ১৫–২৫ WPM ভালো শুরু। নিয়মিত অনুশীলনে ৩০–৪০ WPM সহজেই ছোঁয়া যায়, আর ৫০+ দক্ষ টাইপিস্টের লক্ষণ।</p></details>
+    <details><summary>মাঝপথে গতি হারানো কীভাবে ঠেকাবেন? <i class="fa-solid fa-chevron-down"></i></summary><p>সোজা হয়ে বসুন, কব্জি শিথিল রাখুন, আর স্ক্রিনের দিকে তাকিয়ে টাইপ করুন। প্রতি কয়েক মিনিটে গভীর শ্বাস নিন।</p></details>
+  </div>
+</main>
+
+<footer class="bn">© 2026 Aisha’s typing speed. সর্বস্বত্ব সংরক্ষিত।</footer>
+
+<dialog id="hist" class="bn">
+  <div class="dh"><h3><i class="fa-solid fa-clock-rotate-left"></i> ফলাফলের ইতিহাস</h3><button class="ibtn" id="hClose" aria-label="বন্ধ"><i class="fa-solid fa-xmark"></i></button></div>
+  <div id="hBody"></div>
+  <button class="second" id="hClear" style="margin-top:14px;height:42px"><i class="fa-solid fa-trash"></i> ইতিহাস মুছুন</button>
+</dialog>
+<div class="toast bn" id="toast"></div>
+
+<script>
+const SETS={
+ a:{n:"সাধারণ",t:"ঘরে বসে তারে সুর তোলার নিত্য অভ্যাস করছিলাম। নতুন একটি বাংলা গানের সুর তুলতেই প্রচণ্ড আনন্দ হল। জানালার বাইরে স্নিগ্ধ বাতাস বইছিল আর পাতা নড়ছিল। গানের ছন্দে মন যেন সমস্ত কষ্ট ভুলে গেল। সুরের মায়া মানুষকে নতুন স্বপ্ন দেখতে শেখায়। গান মনের প্রিয় খোরাক।"},
+ b:{n:"গল্প",t:"এক ছিল ছোট্ট গ্রাম, নদীর ধারে তার বাস। সেখানে আয়েশা নামে একটি মেয়ে রোজ ভোরে উঠে বই নিয়ে বসত। তার স্বপ্ন ছিল একদিন সে নিজের হাতে একটি লাইব্রেরি গড়বে। গ্রামের সবাই প্রথমে হাসত, পরে তারাই বই নিতে আসত। ধৈর্য আর অধ্যবসায় থাকলে অসম্ভবও সম্ভব হয়। সেই লাইব্রেরির আলোয় আজও গ্রামের শিশুরা পড়তে শেখে।"},
+ c:{n:"প্রকৃতি",t:"ভোরের আলো ফুটতেই পাখির কলতানে ঘুম ভাঙল। দূরে সবুজ ধানখেতের ওপর কুয়াশা ভেসে বেড়াচ্ছিল। নদীর জলে সূর্যের প্রথম রশ্মি ঝিলমিল করছিল। শিউলি ফুলের মিষ্টি গন্ধে চারপাশ ভরে উঠেছিল। প্রকৃতির এই শান্ত রূপ মনকে নতুন করে সতেজ করে তোলে। বাংলার মাটি আর আকাশ সত্যিই অপূর্ব।"}
+};
+const DURS=[[15,"১৫ সেক"],[30,"৩০ সেক"],[60,"১ মিনিট"],[180,"৩ মিনিট"],[300,"৫ মিনিট"],[600,"১০ মিনিট"],[1200,"২০ মিনিট"],[1800,"৩০ মিনিট"]];
+const $=id=>document.getElementById(id);
+const bn=n=>String(n).replace(/\d/g,d=>"০১২৩৪৫৬৭৮৯"[d]);
+const fmt=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const set=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+
+let dur=+get("ats-dur")||600,setKey=get("ats-set")||"a",shuffle=get("ats-shuf")==="1",sound=get("ats-snd")!=="0",fs=+get("ats-fs")||1.7;
+let left=dur,timer=null,started=false,paused=false,idx=0,okW=0,badW=0,okChars=0,typedChars=0,list=[],samples=[],actx=null,lastText="";
+
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)}
+
+/* ---------- theme, sound, fullscreen, font size ---------- */
+if(get("ats-theme"))document.documentElement.dataset.theme=get("ats-theme");
+$("themeBtn").onclick=()=>{const t=document.documentElement.dataset.theme==="light"?"dark":"light";document.documentElement.dataset.theme=t;set("ats-theme",t)};
+function paintSound(){$("soundBtn").innerHTML=`<i class="fa-solid ${sound?"fa-volume-high":"fa-volume-xmark"}"></i>`}
+$("soundBtn").onclick=()=>{sound=!sound;set("ats-snd",sound?"1":"0");paintSound();$("typebox").focus()};
+paintSound();
+$("fsBtn").onclick=()=>{
+  const on=!!document.fullscreenElement;
+  (on?document.exitFullscreen():document.documentElement.requestFullscreen()).catch(()=>{});
+};
+document.addEventListener("fullscreenchange",()=>{$("fsBtn").innerHTML=`<i class="fa-solid ${document.fullscreenElement?"fa-compress":"fa-expand"}"></i>`});
+function applyFs(){document.documentElement.style.setProperty("--fs",fs+"rem");set("ats-fs",fs)}
+$("fPlus").onclick=()=>{fs=Math.min(2.6,fs+.15);applyFs();scrollTo(idx)};
+$("fMinus").onclick=()=>{fs=Math.max(1.1,fs-.15);applyFs();scrollTo(idx)};
+applyFs();
+const errAudio=new Audio("error.mp3");errAudio.preload="auto";
+let wordErr=false;
+const WPM_TARGET=60; /* text length per minute: 60 words for every minute selected */
+const doneAudio=new Audio("done.mp3");doneAudio.preload="auto";
+const PASS_ACC=80; /* success needs at least this much accuracy (%) */
+const failAudio=new Audio("fail.mp3");failAudio.preload="auto";
+const correctAudio=new Audio("correct.mp3");correctAudio.preload="auto";
+function playCorrect(){
+  if(!sound)return;
+  if(!errAudio.paused&&!errAudio.ended)return; /* never talk over the error voice */
+  if(!correctAudio.paused&&!correctAudio.ended)return; /* already playing: let it finish once */
+  correctAudio.currentTime=0;
+  correctAudio.play().catch(()=>{});
+}
+function playResult(ok){
+  if(!sound)return;
+  errAudio.pause();correctAudio.pause();
+  const a=ok?doneAudio:failAudio,b=ok?failAudio:doneAudio;
+  b.pause();a.currentTime=0;a.play().catch(()=>{});
+}
+function playError(){
+  if(!sound)return;
+  if(!errAudio.paused&&!errAudio.ended)return; /* already playing: let it finish once */
+  correctAudio.pause();
+  errAudio.currentTime=0;
+  errAudio.play().catch(()=>{});
+}
+function beep(f,d,v){
+  if(!sound)return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(),g=actx.createGain();
+    o.frequency.value=f;o.type="sine";g.gain.value=v;
+    o.connect(g);g.connect(actx.destination);o.start();
+    g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+d);o.stop(actx.currentTime+d);
+  }catch(e){}
+}
+
+/* ---------- option chips ---------- */
+function chips(){
+  $("durs").querySelectorAll(".chip").forEach(c=>c.remove());
+  DURS.forEach(([s,l])=>{const b=document.createElement("button");b.className="chip"+(s===dur?" on":"");b.textContent=l;b.onclick=()=>{dur=s;set("ats-dur",s);chips();reset()};$("durs").appendChild(b)});
+  $("sets").querySelectorAll(".chip").forEach(c=>c.remove());
+  Object.entries(SETS).forEach(([k,v])=>{const b=document.createElement("button");b.className="chip"+(k===setKey?" on":"");b.textContent=v.n;b.onclick=()=>{setKey=k;set("ats-set",k);chips();reset()};$("sets").appendChild(b)});
+  $("shufBtn").classList.toggle("on",shuffle);
+}
+$("shufBtn").onclick=()=>{shuffle=!shuffle;set("ats-shuf",shuffle?"1":"0");chips();reset()};
+
+/* ---------- build & reset ---------- */
+function build(){
+  const sents=SETS[setKey].t.split("।").map(s=>s.trim()).filter(Boolean);
+  const target=Math.max(12,Math.round(dur/60*WPM_TARGET));
+  list=[];
+  while(list.length<target){
+    const s=sents.slice();
+    if(shuffle)s.sort(()=>Math.random()-.5);
+    s.forEach(x=>list.push(...(x+"।").split(/\s+/)));
+  }
+  list=list.slice(0,target);
+  $("words").innerHTML=list.map((w,i)=>`<span class="w" id="w${i}">${w}</span>`).join(" ");
+}
+function reset(){
+  clearInterval(timer);started=false;paused=false;wordErr=false;idx=0;okW=badW=okChars=typedChars=0;left=dur;samples=[];
+  build();paintWc();
+  $("w0").classList.add("cur");
+  $("words").style.transform="translateY(0)";
+  $("sTime").textContent=fmt(left);$("sWpm").textContent="0";$("sAcc").textContent="100%";
+  $("bar").style.transition="none";$("bar").style.width="100%";
+  $("typebox").value="";$("typebox").disabled=false;$("typebox").classList.remove("err");
+  $("pauseBtn").innerHTML='<i class="fa-solid fa-pause"></i> বিরতি';
+  $("result").classList.remove("show");
+  $("sBest").textContent=bn(get("ats-best-"+dur)||0);
+  $("typebox").focus();
+}
+
+/* ---------- scoring ---------- */
+function wpm(){const m=(dur-left)/60;return m>0?Math.round(okChars/5/m):0}
+function acc(){return typedChars?Math.round(okChars/typedChars*1000)/10:100}
+function level(w){return w<15?"শিক্ষানবিস":w<30?"অগ্রগামী":w<45?"দক্ষ":"দুর্দান্ত গতি"}
+
+function tick(){
+  if(paused)return;
+  left--;
+  $("sTime").textContent=fmt(left);
+  $("sWpm").textContent=bn(wpm());
+  samples.push(wpm());
+  $("bar").style.transition="width 1s linear";
+  $("bar").style.width=(left/dur*100)+"%";
+  if(left<=0)finish();
+}
+function start(){started=true;timer=setInterval(tick,1000)}
+
+function scrollTo(i){
+  const n=$("w"+i);if(!n)return;
+  const line=parseFloat(getComputedStyle($("words")).lineHeight);
+  $("words").style.transform="translateY(-"+Math.max(0,n.offsetTop-line)+"px)";
+}
+
+function commit(){
+  const box=$("typebox"),typed=box.value.trim();
+  if(!typed)return;
+  const target=list[idx],el=$("w"+idx);
+  typedChars+=target.length+1;
+  el.classList.remove("cur","err");
+  if(typed===target){okW++;okChars+=target.length+1;el.classList.add("ok");playCorrect()}
+  else{badW++;el.classList.add("bad");if(!wordErr)playError()}
+  wordErr=false;
+  box.value="";box.classList.remove("err");idx++;
+  const next=$("w"+idx);
+  if(next){next.classList.add("cur");scrollTo(idx)}
+  $("sWpm").textContent=bn(wpm());$("sAcc").textContent=bn(acc())+"%";
+  paintWc();
+  if(idx>=list.length)finish();
+}
+function paintWc(){$("wc").innerHTML=`<i class="fa-solid fa-align-left"></i> শব্দ: ${bn(idx)} / ${bn(list.length)}`}
+
+function chart(){
+  if(samples.length<2){$("chart").innerHTML="";return}
+  const max=Math.max(...samples,10),W=300,H=80;
+  const pts=samples.map((v,i)=>(i/(samples.length-1)*W).toFixed(1)+","+(H-v/max*(H-8)-4).toFixed(1)).join(" ");
+  $("chart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
+}
+function hist(){try{return JSON.parse(get("ats-hist")||"[]")}catch(e){return[]}}
+
+function finish(){
+  const elapsed=Math.max(1,dur-left);
+  clearInterval(timer);left=0;started=false;
+  $("sTime").textContent=fmt(0);$("bar").style.width="0%";$("typebox").disabled=true;
+  const w=Math.round(okChars/5/(elapsed/60)),a=acc();
+  const pass=a>=PASS_ACC&&okW+badW>0;
+  $("result").classList.toggle("fail",!pass);
+  $("rTitle").innerHTML=pass
+    ?'<i class="fa-solid fa-circle-check"></i> সফল!'
+    :'<i class="fa-solid fa-circle-xmark"></i> ব্যর্থ — নির্ভুলতা '+bn(PASS_ACC)+'%-এর নিচে';
+  $("sWpm").textContent=bn(w);
+  $("rWpm").textContent=bn(w);$("rAcc").textContent=bn(a)+"%";
+  $("rWords").textContent=bn(okW);$("rWrong").textContent=bn(badW);
+  $("rLevel").textContent=level(w);
+  const best=+get("ats-best-"+dur)||0,rec=w>best&&w>0;
+  $("rRec").hidden=!rec;
+  if(rec){set("ats-best-"+dur,w);$("sBest").textContent=bn(w)}
+  const h=hist();h.unshift({d:Date.now(),dur,w,a});set("ats-hist",JSON.stringify(h.slice(0,30)));
+  lastText=`Aisha’s typing speed: ${bn(w)} WPM, নির্ভুলতা ${bn(a)}% (${DURS.find(x=>x[0]===dur)[1]})`;
+  chart();
+  $("result").classList.add("show");
+  playResult(pass);
+  $("result").scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+/* ---------- input ---------- */
+$("typebox").addEventListener("input",e=>{
+  const v=e.target.value;
+  if(paused)return;
+  if(!started&&v.length&&left>0)start();
+  if(/\s$/.test(v)){commit();return}
+  const cur=$("w"+idx),ok=list[idx].startsWith(v.trim());
+  cur.classList.toggle("err",!ok);e.target.classList.toggle("err",!ok);
+  if(!ok&&!wordErr){wordErr=true;playError()}
+  else if(ok){wordErr=false;beep(420,.03,.02)}
+  if(idx===list.length-1&&v.trim()===list[idx])commit(); /* last word: no Space needed, finish right away */
+});
+$("typebox").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();commit()}});
+$("typebox").addEventListener("focus",()=>$("board").classList.remove("idle"));
+$("typebox").addEventListener("blur",()=>$("board").classList.add("idle"));
+$("board").onclick=()=>{if(!$("typebox").disabled)$("typebox").focus()};
+
+function togglePause(){
+  if(!started&&!paused)return;
+  paused=!paused;
+  $("pauseBtn").innerHTML=paused?'<i class="fa-solid fa-play"></i> চালু করুন':'<i class="fa-solid fa-pause"></i> বিরতি';
+  $("typebox").disabled=paused;
+  if(!paused)$("typebox").focus();
+}
+$("pauseBtn").onclick=togglePause;
+$("restart").onclick=reset;
+$("again").onclick=()=>{reset();scrollTo(0);window.scrollTo({top:0,behavior:"smooth"})};
+document.addEventListener("keydown",e=>{
+  if(e.key==="Tab"){e.preventDefault();$("restart").focus()}
+  if(e.key==="Escape"&&!$("hist").open)reset();
+});
+
+/* ---------- result copy & history ---------- */
+$("copyBtn").onclick=async()=>{
+  try{await navigator.clipboard.writeText(lastText);toast("ফলাফল কপি হয়েছে")}
+  catch(e){toast("কপি করা যায়নি")}
+};
+function paintHist(){
+  const h=hist();
+  $("hBody").innerHTML=h.length
+    ?`<div class="row head"><span>তারিখ</span><span>সময়</span><span>WPM</span><span>নির্ভুলতা</span></div>`+
+      h.map(r=>`<div class="row"><span>${new Date(r.d).toLocaleDateString("bn-BD",{day:"numeric",month:"short"})}</span><span>${DURS.find(x=>x[0]===r.dur)?.[1]||bn(r.dur)}</span><span><b>${bn(r.w)}</b></span><span>${bn(r.a)}%</span></div>`).join("")
+    :`<p class="empty">এখনও কোনো ফলাফল নেই।</p>`;
+}
+$("histBtn").onclick=()=>{paintHist();$("hist").showModal()};
+$("hClose").onclick=()=>$("hist").close();
+$("hClear").onclick=()=>{set("ats-hist","[]");paintHist();toast("ইতিহাস মুছে ফেলা হয়েছে")};
+$("hist").addEventListener("click",e=>{if(e.target===$("hist"))$("hist").close()});
+
+chips();reset();
+</script>
+</body>
+</html>
