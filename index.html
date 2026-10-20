@@ -13,12 +13,12 @@
   --bg:#0d1117; --bg2:#141b26; --card:#171f2d; --line:#263246;
   --text:#e8edf5; --muted:#8a97ad; --accent:#2dd4a7; --accent-ink:#04261d;
   --warn:#ff7a6b; --ok:#5eead4; --pending:#6b7a93; --fs:1.7rem;
-  --radius:18px;
+  --radius:18px; --blob:.22;
 }
 :root[data-theme="light"]{
   --bg:#f5f7fb; --bg2:#eaeff7; --card:#ffffff; --line:#d9e1ee;
   --text:#18212f; --muted:#5d6b82; --accent:#0f9d7a; --accent-ink:#ffffff;
-  --warn:#d6402f; --ok:#0f9d7a; --pending:#8d99ad;
+  --warn:#d6402f; --ok:#0f9d7a; --pending:#8d99ad; --blob:.14;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -33,102 +33,182 @@ body,button,input,select,dialog{font-family:'League Spartan','Kalpurush','Hind S
 i.fa-solid,i.fa-regular{font-family:"Font Awesome 6 Free" !important}
 i.fa-solid{font-weight:900}
 
-header{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+/* ================= ANIMATIONS ================= */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:none}}
+@keyframes popIn{0%{opacity:0;transform:scale(.85) translateY(12px)}70%{transform:scale(1.03)}100%{opacity:1;transform:none}}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-5deg)}}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,35px) scale(1.18)}}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+@keyframes pulseCur{0%,100%{box-shadow:0 0 0 1.5px var(--accent),0 0 0 0 color-mix(in srgb,var(--accent) 45%,transparent)}50%{box-shadow:0 0 0 1.5px var(--accent),0 0 0 7px transparent}}
+@keyframes okPop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.18);color:var(--accent)}100%{transform:scale(1)}}
+@keyframes ripple{to{transform:scale(3.2);opacity:0}}
+@keyframes shine{0%,65%{left:-60%}100%{left:130%}}
+@keyframes fall{to{transform:translate(var(--x),108vh) rotate(var(--r));opacity:.9}}
+@keyframes lowPulse{0%,100%{box-shadow:0 12px 40px rgba(0,0,0,.35),0 0 0 4px color-mix(in srgb,var(--warn) 18%,transparent)}50%{box-shadow:0 12px 40px rgba(0,0,0,.35),0 0 0 11px color-mix(in srgb,var(--warn) 0%,transparent)}}
+@keyframes wave{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+
+/* floating soft colour blobs in the background */
+body::before,body::after{content:"";position:fixed;z-index:-1;border-radius:50%;filter:blur(80px);pointer-events:none;opacity:var(--blob)}
+body::before{width:380px;height:380px;background:var(--accent);left:-130px;top:22%;animation:drift 18s ease-in-out infinite}
+body::after{width:320px;height:320px;background:#6366f1;right:-110px;bottom:4%;animation:drift 23s ease-in-out infinite reverse}
+
+/* ripple + shine helpers */
+.primary,.second,.chip,.ibtn{position:relative;overflow:hidden}
+.rip{position:absolute;border-radius:50%;background:currentColor;opacity:.25;transform:scale(0);animation:ripple .6s ease-out;pointer-events:none}
+.primary::after{content:"";position:absolute;top:0;left:-60%;width:38%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);transform:skewX(-20deg);animation:shine 4s ease-in-out infinite;pointer-events:none}
+
+/* scroll reveal */
+.rv{opacity:0}
+.rv.in{opacity:1;animation:fadeUp .7s var(--d,0s) backwards}
+
+header{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line);animation:slideDown .6s ease backwards;transition:transform .45s ease}
+body.running header{transform:translateY(-110%)}
 .bar{max-width:1080px;margin:auto;padding:12px 20px;display:flex;align-items:center;gap:16px;justify-content:space-between}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.25rem}
-.logo{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;animation:floaty 3.6s ease-in-out infinite}
 .tools{display:flex;gap:8px}
-.ibtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;transition:border-color .2s,transform .1s}
-.ibtn:hover{border-color:var(--accent);color:var(--accent)}
-.ibtn:active{transform:scale(.94)}
+.ibtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;transition:border-color .2s,transform .15s,color .2s}
+.ibtn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px) rotate(-6deg)}
+.ibtn:active{transform:scale(.92)}
+.ibtn.off{opacity:.55}
+.ibtn.off::before{content:"";position:absolute;left:50%;top:50%;width:22px;height:2px;background:var(--warn);transform:translate(-50%,-50%) rotate(-45deg)}
 button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 main{max-width:1080px;margin:auto;padding:28px 20px 60px}
-.hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:700;line-height:1.25}
-.hero p{color:var(--muted);margin-top:6px;max-width:60ch}
+.hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:700;line-height:1.25;background:linear-gradient(90deg,var(--text),var(--accent),var(--text));background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:fadeUp .7s .1s backwards,shimmer 7s linear infinite}
+.hero p{color:var(--muted);margin-top:6px;max-width:60ch;animation:fadeUp .7s .25s backwards}
 
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0 14px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;display:flex;gap:14px;align-items:center}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;display:flex;gap:14px;align-items:center;animation:popIn .65s backwards;transition:transform .25s,border-color .25s,box-shadow .25s}
+.stat:nth-child(1){animation-delay:.2s}.stat:nth-child(2){animation-delay:.3s}.stat:nth-child(3){animation-delay:.4s}.stat:nth-child(4){animation-delay:.5s}
+.stat:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 10px 26px rgba(0,0,0,.2)}
 .stat>i{font-size:1.3rem;color:var(--accent);width:26px;text-align:center}
+.stat:hover>i{animation:floaty 1s ease-in-out infinite}
 .stat small{color:var(--muted);font-size:.85rem;display:block}
-.stat b{font-size:1.8rem;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
+.stat b{font-size:1.8rem;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums;display:inline-block}
+.stat b.bump{animation:bump .4s ease}
 
-.opts{display:flex;flex-wrap:wrap;gap:10px 18px;margin-bottom:14px;align-items:center}
+.opts{display:flex;flex-wrap:wrap;gap:10px 18px;margin-bottom:14px;align-items:center;animation:fadeUp .7s .55s backwards}
 .group{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .group>span{color:var(--muted);font-size:.9rem;margin-right:2px}
-.chip{border:1px solid var(--line);background:var(--card);color:var(--text);padding:5px 14px;border-radius:999px;cursor:pointer;font-size:.92rem;transition:all .2s}
-.chip:hover{border-color:var(--accent)}
-.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--text);padding:5px 14px;border-radius:999px;cursor:pointer;font-size:.92rem;transition:border-color .2s,transform .15s,background .2s}
+.chip:hover{border-color:var(--accent);transform:translateY(-2px)}
+.chip:active{transform:scale(.94)}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600;animation:okPop .4s ease}
 .chip i{margin-right:5px}
 
-.progress{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:14px}
-.progress i{display:block;height:100%;background:var(--accent);transform-origin:left}
+.progress{height:5px;background:var(--line);border-radius:5px;overflow:hidden;margin-bottom:14px}
+.progress i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 45%,#fff),var(--accent));background-size:200% 100%;animation:shimmer 2.2s linear infinite;transform-origin:left}
 
 .wc{color:var(--muted);font-size:.9rem;text-align:right;margin:-6px 2px 10px;font-variant-numeric:tabular-nums}
-.board{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;height:230px;overflow:hidden;position:relative;cursor:text}
+.board{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;height:230px;overflow:hidden;position:relative;cursor:text;animation:fadeUp .8s .6s backwards;transition:border-color .3s,box-shadow .3s}
+.board:not(.idle){border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent)}
 .board::after{content:"";position:absolute;inset:auto 0 0 0;height:50px;background:linear-gradient(transparent,var(--card));pointer-events:none}
-.cover{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:10px;background:color-mix(in srgb,var(--card) 70%,transparent);backdrop-filter:blur(5px);font-weight:600;color:var(--accent);opacity:0;pointer-events:none;transition:opacity .2s}
+.cover{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:10px;background:color-mix(in srgb,var(--card) 70%,transparent);backdrop-filter:blur(5px);font-weight:600;color:var(--accent);opacity:0;pointer-events:none;transition:opacity .25s}
+.cover i{animation:floaty 1.6s ease-in-out infinite}
 .board.idle .cover{opacity:1}
-#words{font-size:var(--fs);line-height:calc(var(--fs)*1.45);color:var(--pending);transition:transform .15s ease}
-.w{display:inline-block;margin-right:.5em;padding:0 4px;border-radius:6px}
-.w.cur{background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--text);box-shadow:0 0 0 1.5px var(--accent)}
-.w.cur.err{background:color-mix(in srgb,var(--warn) 22%,transparent);box-shadow:0 0 0 1.5px var(--warn);color:var(--warn)}
-.w.ok{color:var(--ok)}
-.w.bad{color:var(--warn);text-decoration:underline wavy;text-underline-offset:5px}
+#words{font-size:var(--fs);line-height:calc(var(--fs)*1.45);color:var(--pending);transition:transform .25s ease}
+#words.swap{animation:fadeIn .5s ease}
+.w{display:inline-block;margin-right:.5em;padding:0 4px;border-radius:6px;transition:color .2s,background .2s}
+.w.cur{background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--text);animation:pulseCur 1.5s ease-in-out infinite}
+.w.cur.err{background:color-mix(in srgb,var(--warn) 22%,transparent);box-shadow:0 0 0 1.5px var(--warn);color:var(--warn);animation:none}
+.w.ok{color:var(--ok);animation:okPop .35s ease}
+.w.bad{color:var(--warn);text-decoration:underline wavy;text-underline-offset:5px;animation:shake .4s ease}
 
-.input-row{display:flex;gap:12px;margin-top:16px;align-items:stretch}
+.input-row{display:flex;gap:12px;margin-top:16px;align-items:stretch;animation:fadeUp .8s .7s backwards}
 .typewrap{position:relative;flex:1}
 .typewrap>i{position:absolute;left:24px;top:50%;transform:translateY(-50%);font-size:1.4rem;color:var(--muted);transition:color .2s;pointer-events:none}
-.typewrap:focus-within>i{color:var(--accent)}
+.typewrap:focus-within>i{color:var(--accent);animation:floaty 1.4s ease-in-out infinite}
 .typewrap:has(.err)>i{color:var(--warn)}
 #typebox{width:100%;height:84px;border-radius:20px;border:2px solid var(--line);background:linear-gradient(180deg,var(--bg2),var(--card));color:var(--text);padding:0 24px 0 66px;font-size:1.9rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.18);transition:border-color .2s,box-shadow .2s}
 #typebox::placeholder{color:var(--muted);font-size:1.2rem;opacity:.8}
 #typebox:focus{border-color:var(--accent);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 20%,transparent),0 8px 24px rgba(0,0,0,.18)}
-#typebox.err{border-color:var(--warn);box-shadow:0 0 0 5px color-mix(in srgb,var(--warn) 20%,transparent)}
-.primary,.second{min-height:54px;padding:0 22px;border-radius:14px;font-weight:700;font-size:1rem;cursor:pointer;transition:transform .1s,filter .2s;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+#typebox.err{border-color:var(--warn);box-shadow:0 0 0 5px color-mix(in srgb,var(--warn) 20%,transparent);animation:shake .35s ease}
+.primary,.second{min-height:54px;padding:0 22px;border-radius:14px;font-weight:700;font-size:1rem;cursor:pointer;transition:transform .15s,filter .2s,border-color .2s,box-shadow .2s;display:inline-flex;align-items:center;gap:8px;justify-content:center}
 .primary{border:0;background:var(--accent);color:var(--accent-ink)}
 .second{border:1px solid var(--line);background:var(--card);color:var(--text)}
-.primary:hover{filter:brightness(1.08)}.second:hover{border-color:var(--accent)}
-.primary:active,.second:active{transform:scale(.97)}
-.hint{color:var(--muted);font-size:.88rem;margin-top:10px}
+.primary:hover{filter:brightness(1.08);transform:translateY(-2px);box-shadow:0 8px 20px color-mix(in srgb,var(--accent) 35%,transparent)}
+.second:hover{border-color:var(--accent);transform:translateY(-2px)}
+.primary:active,.second:active{transform:scale(.96)}
+.hint{color:var(--muted);font-size:.88rem;margin-top:10px;animation:fadeIn 1s .9s backwards}
 kbd{border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:.8rem;background:var(--bg2)}
 
-.result{display:none;margin-top:22px;background:var(--card);border:1px solid var(--accent);border-radius:var(--radius);padding:26px;animation:pop .35s ease}
-.result.show{display:block}
-@keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* ---- floating timer popup (shown while the test is running) ---- */
+.tpop{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:50%;z-index:30;display:flex;align-items:center;gap:14px;padding:9px 20px 9px 11px;border-radius:999px;background:color-mix(in srgb,var(--card) 90%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1.5px solid var(--accent);box-shadow:0 12px 40px rgba(0,0,0,.35),0 0 0 6px color-mix(in srgb,var(--accent) 12%,transparent);transform:translate(-50%,-40px) scale(.8);opacity:0;pointer-events:none;transition:transform .5s cubic-bezier(.2,1.3,.4,1),opacity .3s,top .4s ease,border-color .3s}
+.tpop.show{transform:translate(-50%,0) scale(1);opacity:1}
+body:not(.running) .tpop.show{top:calc(env(safe-area-inset-top,0px) + 72px)}
+.tpop .ring{width:54px;height:54px;transform:rotate(-90deg);flex:none}
+.tpop .ring circle{fill:none;stroke-width:4}
+.tpop .trk{stroke:var(--line)}
+.tpop .prg{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:119.38;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke .3s}
+.tp-main{min-width:76px}
+.tp-main small{display:block;color:var(--muted);font-size:.74rem;line-height:1.1}
+.tp-main b{display:inline-block;font-size:1.9rem;line-height:1.1;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+.tp-main b.bump{animation:bump .4s ease}
+.tp-side{display:flex;flex-direction:column;gap:1px;font-size:.88rem;color:var(--muted);padding-left:14px;border-left:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tp-side i{color:var(--accent);width:18px}
+.tp-side b{color:var(--text);font-weight:600}
+.tpop.paused{border-color:var(--pending)}
+.tpop.paused .prg{stroke:var(--pending)}
+.tpop.low{border-color:var(--warn);animation:lowPulse 1s ease-in-out infinite}
+.tpop.low .prg{stroke:var(--warn)}
+.tpop.low .tp-main b{color:var(--warn)}
+.talk{display:none;align-items:center;gap:3px;height:20px;margin-left:2px}
+.talk.on{display:inline-flex}
+.talk i{display:block;width:3px;height:100%;background:var(--accent);border-radius:2px;animation:wave .7s ease-in-out infinite}
+.talk i:nth-child(2){animation-delay:.12s}.talk i:nth-child(3){animation-delay:.24s}.talk i:nth-child(4){animation-delay:.36s}
+
+.result{display:none;margin-top:22px;background:var(--card);border:1px solid var(--accent);border-radius:var(--radius);padding:26px}
+.result.show{display:block;animation:popIn .55s ease}
 .result h2{font-size:1.5rem;color:var(--accent)}
 .result.fail{border-color:var(--warn)}
 .result.fail h2{color:var(--warn)}
 .badge{display:inline-flex;gap:6px;align-items:center;padding:4px 14px;border-radius:999px;background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);font-weight:600;margin:6px 6px 0 0}
-.badge.rec{background:#f5b94233;color:#f5b942}
+.badge.rec{background:#f5b94233;color:#f5b942;animation:okPop .8s ease 3}
 .big{display:flex;gap:30px;flex-wrap:wrap;margin:16px 0}
+.big>div{animation:fadeUp .6s backwards}
+.big>div:nth-child(2){animation-delay:.1s}.big>div:nth-child(3){animation-delay:.2s}.big>div:nth-child(4){animation-delay:.3s}
 .big b{font-size:2.6rem;line-height:1;color:var(--accent);display:block;font-variant-numeric:tabular-nums}
 .big small{color:var(--muted)}
 #chart{height:90px;margin:4px 0 18px;border-radius:12px;background:var(--bg2);padding:6px}
 #chart svg{width:100%;height:100%}
+#chart polyline{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.6s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
 .acts{display:flex;gap:10px;flex-wrap:wrap}
 
 section.info{margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.tile{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
-.tile i{color:var(--accent);font-size:1.3rem;margin-bottom:8px;display:block}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;transition:transform .3s,border-color .3s,box-shadow .3s}
+.tile:hover{transform:translateY(-6px);border-color:var(--accent);box-shadow:0 14px 30px rgba(0,0,0,.2)}
+.tile i{color:var(--accent);font-size:1.3rem;margin-bottom:8px;display:block;transition:transform .4s}
+.tile:hover i{transform:scale(1.25) rotate(-8deg)}
 .tile h3{font-size:1.1rem;margin-bottom:6px}
 .tile p{color:var(--muted);font-size:.95rem}
-details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-top:10px}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-top:10px;transition:border-color .25s}
+details:hover{border-color:var(--accent)}
 summary{cursor:pointer;font-weight:600;display:flex;justify-content:space-between;align-items:center;list-style:none}
 summary::-webkit-details-marker{display:none}
-summary i{transition:transform .2s;color:var(--muted)}
+summary i{transition:transform .3s;color:var(--muted)}
 details[open] summary i{transform:rotate(180deg)}
 details p{color:var(--muted);margin-top:8px}
+details[open] p{animation:fadeUp .4s ease}
 footer{border-top:1px solid var(--line);padding:24px 20px;text-align:center;color:var(--muted);font-size:.9rem}
 
 dialog{margin:auto;width:min(520px,92vw);border:1px solid var(--line);border-radius:var(--radius);background:var(--card);color:var(--text);padding:22px}
-dialog::backdrop{background:rgba(0,0,0,.55)}
+dialog[open]{animation:popIn .35s ease}
+dialog::backdrop{background:rgba(0,0,0,.55);animation:fadeIn .3s ease}
 .dh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.row{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.93rem}
+.row{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.93rem;animation:fadeUp .4s backwards}
 .row.head{color:var(--muted);font-size:.82rem}
 .empty{color:var(--muted);padding:18px 0;text-align:center}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--accent);color:var(--accent-ink);padding:10px 20px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:50}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--accent);color:var(--accent-ink);padding:10px 20px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.2,1.3,.4,1);z-index:50;max-width:92vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%)}
+
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.confetti i{position:absolute;top:-24px;border-radius:2px;animation:fall linear forwards}
 
 @media(max-width:760px){
   .stats{grid-template-columns:repeat(2,1fr)}
@@ -142,13 +222,25 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
   .logo{width:32px;height:32px;flex:none}
   .tools{gap:6px;flex:none}
   .ibtn{width:36px;height:36px}
+  .tpop{gap:10px;padding:7px 14px 7px 8px}
+  .tpop .ring{width:42px;height:42px}
+  .tp-main{min-width:62px}
+  .tp-main b{font-size:1.45rem}
+  body:not(.running) .tpop.show{top:calc(env(safe-area-inset-top,0px) + 64px)}
+}
+@media(max-width:420px){
+  .tp-side{font-size:.78rem;padding-left:10px}
 }
 @media(max-width:380px){
   .brand{font-size:.9rem}
   .ibtn{width:32px;height:32px}
   .tools{gap:4px}
 }
-@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* reduced motion: stop only the endless/decorative loops, keep the rest gentle */
+@media(prefers-reduced-motion:reduce){
+  body::before,body::after,.logo,.primary::after,.progress i,.w.cur,.cover i,.hero h1,.tpop.low,.typewrap:focus-within>i{animation:none!important}
+  .confetti{display:none}
+}
 </style>
 </head>
 <body>
@@ -157,6 +249,7 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
     <div class="brand"><div class="logo"><i class="fa-solid fa-keyboard"></i></div><span>Aisha’s typing speed</span></div>
     <div class="tools">
       <button class="ibtn" id="histBtn" title="ফলাফলের ইতিহাস" aria-label="ফলাফলের ইতিহাস"><i class="fa-solid fa-clock-rotate-left"></i></button>
+      <button class="ibtn" id="voiceBtn" title="শব্দের ভয়েস" aria-label="শব্দের ভয়েস চালু/বন্ধ"><i class="fa-solid fa-person-speaking"></i></button>
       <button class="ibtn" id="soundBtn" title="সাউন্ড" aria-label="সাউন্ড"><i class="fa-solid fa-volume-high"></i></button>
       <button class="ibtn" id="fsBtn" title="ফুলস্ক্রিন" aria-label="ফুলস্ক্রিন"><i class="fa-solid fa-expand"></i></button>
       <button class="ibtn" id="themeBtn" title="থিম" aria-label="থিম পরিবর্তন"><i class="fa-solid fa-circle-half-stroke"></i></button>
@@ -164,10 +257,21 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
   </div>
 </header>
 
+<!-- floating timer popup -->
+<div class="tpop bn" id="tpop" aria-hidden="true">
+  <svg class="ring" viewBox="0 0 44 44"><circle class="trk" cx="22" cy="22" r="19"/><circle class="prg" id="ringP" cx="22" cy="22" r="19"/></svg>
+  <div class="tp-main"><small id="tpLabel">সময় বাকি</small><b id="tpTime">10:00</b></div>
+  <div class="tp-side">
+    <span><i class="fa-solid fa-gauge-high"></i><b id="tpWpm">0</b> WPM</span>
+    <span><i class="fa-solid fa-bullseye"></i><b id="tpAcc">100%</b></span>
+  </div>
+  <div class="talk" id="talk" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+</div>
+
 <main>
   <div class="hero bn">
-    <h1>বাংলা টাইপিং স্পিড টেস্ট</h1>
-    <p>আপনার গতি (WPM) আর নির্ভুলতা যাচাই করুন। টাইপ শুরু করলেই টাইমার চালু হবে।</p>
+    <h1 id="heroT">বাংলা টাইপিং স্পিড টেস্ট</h1>
+    <p id="heroP">আপনার গতি (WPM) আর নির্ভুলতা যাচাই করুন। টাইপ শুরু করলেই টাইমার চালু হবে, আর প্রতিটি শব্দ লিখলেই তার উচ্চারণ শোনা যাবে।</p>
   </div>
 
   <div class="stats bn">
@@ -178,6 +282,7 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
   </div>
 
   <div class="opts bn">
+    <div class="group" id="langs"><span><i class="fa-solid fa-language"></i> ভাষা:</span></div>
     <div class="group" id="durs"><span><i class="fa-regular fa-clock"></i> সময়:</span></div>
     <div class="group" id="sets"><span><i class="fa-solid fa-book-open"></i> লেখা:</span></div>
     <div class="group">
@@ -194,7 +299,7 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
   <div class="input-row">
     <div class="typewrap">
       <i class="fa-solid fa-pen-nib"></i>
-      <input id="typebox" class="bn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="হাইলাইট শব্দ টাইপ করুন…">
+      <input id="typebox" class="bn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="হাইলাইট শব্দ টাইপ করুন…">
     </div>
     <button class="second bn" id="pauseBtn"><i class="fa-solid fa-pause"></i> বিরতি</button>
     <button class="primary bn" id="restart"><i class="fa-solid fa-rotate-right"></i> রিস্টার্ট</button>
@@ -218,18 +323,19 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
   </div>
 
   <section class="info bn">
-    <div class="tile"><i class="fa-solid fa-bullseye"></i><h3>নির্ভুলতা আগে</h3><p>প্রথমে ভুল কমান, গতি আপনাআপনি বাড়বে। ভুল শব্দ লাল রঙে দেখাবে।</p></div>
-    <div class="tile"><i class="fa-solid fa-wave-square"></i><h3>ছন্দ বজায় রাখুন</h3><p>থেমে থেমে নয়, একই তালে টাইপ করুন। দীর্ঘ টেস্টে স্ট্যামিনা তৈরি হয়।</p></div>
-    <div class="tile"><i class="fa-solid fa-language"></i><h3>রেফ ও যুক্তবর্ণ</h3><p>র + ্ + পরের ব্যঞ্জনবর্ণ লিখলে রেফ তৈরি হবে। যুক্তাক্ষর সঠিক ক্রমে টাইপ করুন।</p></div>
+    <div class="tile rv" style="--d:0s"><i class="fa-solid fa-bullseye"></i><h3>নির্ভুলতা আগে</h3><p>প্রথমে ভুল কমান, গতি আপনাআপনি বাড়বে। ভুল শব্দ লাল রঙে দেখাবে।</p></div>
+    <div class="tile rv" style="--d:.12s"><i class="fa-solid fa-wave-square"></i><h3>ছন্দ বজায় রাখুন</h3><p>থেমে থেমে নয়, একই তালে টাইপ করুন। দীর্ঘ টেস্টে স্ট্যামিনা তৈরি হয়।</p></div>
+    <div class="tile rv" style="--d:.24s"><i class="fa-solid fa-language" id="tile3i"></i><h3 id="tile3h">রেফ ও যুক্তবর্ণ</h3><p id="tile3p">র + ্ + পরের ব্যঞ্জনবর্ণ লিখলে রেফ তৈরি হবে। যুক্তাক্ষর সঠিক ক্রমে টাইপ করুন।</p></div>
   </section>
 
-  <div class="bn" style="margin-top:30px">
+  <div class="bn rv" style="margin-top:30px">
     <details><summary>দশ মিনিটের টেস্টে কত WPM ভালো? <i class="fa-solid fa-chevron-down"></i></summary><p>নতুনদের জন্য ১৫–২৫ WPM ভালো শুরু। নিয়মিত অনুশীলনে ৩০–৪০ WPM সহজেই ছোঁয়া যায়, আর ৫০+ দক্ষ টাইপিস্টের লক্ষণ।</p></details>
     <details><summary>মাঝপথে গতি হারানো কীভাবে ঠেকাবেন? <i class="fa-solid fa-chevron-down"></i></summary><p>সোজা হয়ে বসুন, কব্জি শিথিল রাখুন, আর স্ক্রিনের দিকে তাকিয়ে টাইপ করুন। প্রতি কয়েক মিনিটে গভীর শ্বাস নিন।</p></details>
+    <details><summary>শব্দের ভয়েস না শোনা গেলে কী করবেন? <i class="fa-solid fa-chevron-down"></i></summary><p>ফোনের সাইলেন্ট সুইচ বন্ধ করুন, ভলিউম বাড়ান, আর একবার স্ক্রিনে ট্যাপ করুন। বাংলা ভয়েস না থাকলে ফোনের সেটিংস থেকে বাংলা টেক্সট-টু-স্পিচ ভয়েস ইনস্টল করুন।</p></details>
   </div>
 </main>
 
-<footer class="bn">© 2026 Aisha’s typing speed. সর্বস্বত্ব সংরক্ষিত।</footer>
+<footer class="bn rv">© 2026 Aisha’s typing speed. সর্বস্বত্ব সংরক্ষিত।</footer>
 
 <dialog id="hist" class="bn">
   <div class="dh"><h3><i class="fa-solid fa-clock-rotate-left"></i> ফলাফলের ইতিহাস</h3><button class="ibtn" id="hClose" aria-label="বন্ধ"><i class="fa-solid fa-xmark"></i></button></div>
@@ -239,69 +345,277 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 <div class="toast bn" id="toast"></div>
 
 <script>
-const SETS={
- a:{n:"সাধারণ",t:"ঘরে বসে তারে সুর তোলার নিত্য অভ্যাস করছিলাম। নতুন একটি বাংলা গানের সুর তুলতেই প্রচণ্ড আনন্দ হল। জানালার বাইরে স্নিগ্ধ বাতাস বইছিল আর পাতা নড়ছিল। গানের ছন্দে মন যেন সমস্ত কষ্ট ভুলে গেল। সুরের মায়া মানুষকে নতুন স্বপ্ন দেখতে শেখায়। গান মনের প্রিয় খোরাক।"},
- b:{n:"গল্প",t:"এক ছিল ছোট্ট গ্রাম, নদীর ধারে তার বাস। সেখানে আয়েশা নামে একটি মেয়ে রোজ ভোরে উঠে বই নিয়ে বসত। তার স্বপ্ন ছিল একদিন সে নিজের হাতে একটি লাইব্রেরি গড়বে। গ্রামের সবাই প্রথমে হাসত, পরে তারাই বই নিতে আসত। ধৈর্য আর অধ্যবসায় থাকলে অসম্ভবও সম্ভব হয়। সেই লাইব্রেরির আলোয় আজও গ্রামের শিশুরা পড়তে শেখে।"},
- c:{n:"প্রকৃতি",t:"ভোরের আলো ফুটতেই পাখির কলতানে ঘুম ভাঙল। দূরে সবুজ ধানখেতের ওপর কুয়াশা ভেসে বেড়াচ্ছিল। নদীর জলে সূর্যের প্রথম রশ্মি ঝিলমিল করছিল। শিউলি ফুলের মিষ্টি গন্ধে চারপাশ ভরে উঠেছিল। প্রকৃতির এই শান্ত রূপ মনকে নতুন করে সতেজ করে তোলে। বাংলার মাটি আর আকাশ সত্যিই অপূর্ব।"}
+/* =====================================================================
+   টেক্সট ভাণ্ডার — সব গল্প নবজাতকের প্রথম ২-৩ মাস নিয়ে।
+   rate = প্রতি মিনিটে কতগুলো শব্দ দেওয়া হবে (নতুনদের জন্য ছোট রাখা হয়েছে)।
+   বাড়াতে/কমাতে শুধু rate-এর সংখ্যা বদলান।
+   ===================================================================== */
+const LANGS={
+ bn:{
+  rate:12,
+  hero:"বাংলা টাইপিং স্পিড টেস্ট",
+  sub:"আপনার গতি (WPM) আর নির্ভুলতা যাচাই করুন। টাইপ শুরু করলেই টাইমার চালু হবে, আর প্রতিটি শব্দ লিখলেই তার উচ্চারণ শোনা যাবে।",
+  ph:"হাইলাইট শব্দ টাইপ করুন…",
+  tile:["fa-language","রেফ ও যুক্তবর্ণ","র + ্ + পরের ব্যঞ্জনবর্ণ লিখলে রেফ তৈরি হবে। যুক্তাক্ষর সঠিক ক্রমে টাইপ করুন।"],
+  sets:{
+   a:{n:"ঘুম ও আদর",s:[
+    "আয়শা আজ আফনানকে কোলে নিয়ে ঘুম পাড়াচ্ছে।",
+    "সে আস্তে আস্তে গুনগুন করে গান গায়।",
+    "আফনান ছোট্ট হাত নেড়ে চোখ বন্ধ করে।",
+    "আয়শা তার নরম গালে একটি চুমু খায়।",
+    "ঘুম এলে আয়শা আফনানকে বিছানায় শুইয়ে দেয়।",
+    "রাতে আফনান বারবার জেগে ওঠে।",
+    "আয়শা তখন তাকে আবার বুকে জড়িয়ে ধরে।",
+    "ক্ষুধা পেলে আফনান কেঁদে ওঠে।",
+    "আয়শা তাড়াতাড়ি তাকে দুধ খাওয়ায়।",
+    "দুধ খেয়ে আফনান আরাম করে হাসে।",
+    "আয়শা কপালে চুমু দিয়ে বলে, আমার সোনা ঘুমাও।",
+    "ঘরের আলো কমিয়ে দেওয়া হয়।",
+    "বাইরে বৃষ্টির শব্দ হচ্ছে।",
+    "আফনান আয়শার বুকে মাথা রেখে ঘুমিয়ে পড়ে।",
+    "আয়শা অনেকক্ষণ তার মুখের দিকে চেয়ে থাকে।",
+    "ভোর হলে আফনান আবার চোখ মেলে তাকায়।",
+    "আয়শা হেসে বলে, শুভ সকাল আমার সোনা।",
+    "সারা রাত না ঘুমালেও আয়শার মুখে হাসি থাকে।"]},
+   b:{n:"গোসল ও যত্ন",s:[
+    "আফনান হঠাৎ হিসু করে দিল।",
+    "আয়শা তাড়াতাড়ি পরিষ্কার কাপড় নিয়ে এল।",
+    "সে খুব যত্ন করে আফনানের নিচটা মুছে দিল।",
+    "নতুন ন্যাপি পরাতেই আফনান হেসে উঠল।",
+    "কিছুক্ষণ পরে আফনান পটিও করে দিল।",
+    "আয়শা গরম পানি দিয়ে তাকে ধুয়ে দিল।",
+    "নরম তোয়ালে দিয়ে আলতো করে মুছে নিল।",
+    "সকালে ডক্টর দিলরুবা বেগম আফনানকে গোসল করিয়ে দেন।",
+    "তিনি কুসুম গরম পানি আর সাবান নেন।",
+    "পানিতে নামলে আফনান হাত পা ছোড়ে।",
+    "ডক্টর দিলরুবা বেগম বলেন, আমার সোনা মানিক খুব খুশি।",
+    "কখনো কুলসুম বেগম এসেও আফনানকে গোসল করিয়ে দেন।",
+    "কুলসুম বেগম আফনানের গায়ে সরিষার তেল মালিশ করেন।",
+    "গোসলের পর আফনান নরম জামা পরে।",
+    "আয়শা তার চুল আঁচড়ে কাজল পরিয়ে দেয়।",
+    "সুন্দর গন্ধে সারা ঘর ভরে যায়।",
+    "পরিষ্কার হয়ে আফনান আরামে ঘুমিয়ে পড়ে।",
+    "আয়শা ময়লা কাপড়গুলো ধুতে নিয়ে যায়।"]},
+   c:{n:"পরিবারের কোলে",s:[
+    "আরিফ বিল্লাহ অফিস থেকে ফিরে আফনানকে কোলে নেয়।",
+    "আফনান আরিফ বিল্লাহর কোলে চুপ করে শুয়ে থাকে।",
+    "আয়শা সেই সুযোগে রান্না করতে যায়।",
+    "রান্নাঘর থেকে আয়শা বারবার উঁকি দেয়।",
+    "হঠাৎ আফনান আরিফ বিল্লাহর কোলে হিসু করে দেয়।",
+    "আরিফ বিল্লাহ হেসে বলে, ওরে বাবা, কাপড় ভিজে গেছে।",
+    "বোরহান উদ্দিন আফনানকে কোলে নিয়ে বারান্দায় বসেন।",
+    "বোরহান উদ্দিনের কোলেও আফনান প্রস্রাব করে দেয়।",
+    "বোরহান উদ্দিন হা হা করে হেসে ওঠেন।",
+    "চাচ্চু আফনানকে নিয়ে খেলা করে।",
+    "কিছুক্ষণ পরে চাচ্চুর কোলে আফনান পটি করে দেয়।",
+    "চাচ্চু নাক চেপে ধরে দৌড় দেয়।",
+    "সবাই মিলে খুব হাসাহাসি করে।",
+    "ডক্টর দিলরুবা বেগমও আফনানকে কোলে নিয়ে আদর করেন।",
+    "ডক্টর দিলরুবা বেগমের কোলে আফনান প্রস্রাব করে দেয়।",
+    "ডক্টর দিলরুবা বেগম বলেন, আফনান সবার কোলেই দুষ্টুমি করে।",
+    "আয়শা এসে আফনানকে পরিষ্কার করে দেয়।",
+    "সারা বাড়িতে আফনানের হাসির শব্দ ছড়িয়ে পড়ে।"]},
+   d:{n:"হাঁটা ও বাইরে",s:[
+    "বিকেলে আয়শা আফনানকে নিয়ে ঘরের ভেতর হাঁটে।",
+    "আফনান আয়শার কাঁধে মাথা রেখে চুপ থাকে।",
+    "আয়শা আস্তে আস্তে তার পিঠ চাপড়ে দেয়।",
+    "বাইরে ঠান্ডা বাতাস বইছে।",
+    "আয়শা আফনানকে নরম চাদরে জড়িয়ে নেয়।",
+    "আরিফ বিল্লাহ আফনানকে কোলে নিয়ে বাইরে যায়।",
+    "আফনান বড় বড় চোখে গাছপালা দেখে।",
+    "একটি পাখি ডেকে উঠলে সে চমকে তাকায়।",
+    "আয়শা বলে, ওই দেখো পাখি।",
+    "পাশের বাড়ির খালা আফনানকে দেখতে আসেন।",
+    "তিনি বলেন, কী সুন্দর ফুটফুটে আফনান।",
+    "আয়শা মিষ্টি করে হেসে ধন্যবাদ বলে।",
+    "ডাক্তারের কাছে যাওয়ার দিন আয়শা ব্যাগ গুছিয়ে নেয়।",
+    "ব্যাগে ন্যাপি, দুধ আর তোয়ালে থাকে।",
+    "বাড়ি ফিরে আয়শা আফনানকে বিছানায় শুইয়ে দেয়।",
+    "দেখতে দেখতে আফনানের তিন মাস হয়ে গেল।",
+    "এখন সে আয়শার দিকে তাকিয়ে হাসে।",
+    "এই হাসিই আয়শার সবচেয়ে বড় আনন্দ।"]}
+  }
+ },
+ en:{
+  rate:15,
+  hero:"English Typing Practice",
+  sub:"ইংরেজি টাইপিং অনুশীলন করুন। প্রতিটি শব্দ টাইপ করলেই তার উচ্চারণ শুনতে পাবেন। ধীরে ও নির্ভুলভাবে শুরু করুন।",
+  ph:"Type the highlighted word…",
+  tile:["fa-font","বড় হাতের অক্ষর ও যতিচিহ্ন","লেখায় যেভাবে আছে ঠিক সেভাবেই টাইপ করুন। বড় হাতের অক্ষর, কমা আর ফুলস্টপও গুনতে হবে।"],
+  sets:{
+   a:{n:"Sleep & Love",s:[
+    "Mom is rocking the baby to sleep today.",
+    "She hums a soft song again and again.",
+    "The baby waves a tiny hand and closes his eyes.",
+    "Mom gives a sweet kiss on his soft cheek.",
+    "When sleep comes, she lays him on the bed.",
+    "At night the baby wakes up many times.",
+    "Mom holds him close to her chest once more.",
+    "When he feels hungry, he starts to cry.",
+    "Mom quickly feeds him warm milk.",
+    "After the milk, the baby smiles with comfort.",
+    "Mom kisses his forehead and says, sleep well, my love.",
+    "The lights in the room are turned down low.",
+    "Outside, the rain makes a gentle sound.",
+    "The baby rests his head on mom and falls asleep.",
+    "Mom looks at his little face for a long time.",
+    "At dawn the baby opens his eyes again.",
+    "Mom smiles and says, good morning, my darling.",
+    "Even without sleep, mom still has a smile."]},
+   b:{n:"Bath & Care",s:[
+    "Suddenly the baby pees.",
+    "Mom quickly brings a clean cloth.",
+    "She wipes the baby with great care.",
+    "The new diaper makes the baby giggle.",
+    "A little later, the baby poops too.",
+    "Mom washes him with warm water.",
+    "She dries him gently with a soft towel.",
+    "In the morning, Dadi gives the baby a bath.",
+    "She takes warm water and mild soap.",
+    "In the water, the baby kicks his legs.",
+    "Dadi says, my little treasure is so happy.",
+    "Sometimes Nanu comes and gives the bath.",
+    "Nanu rubs a little oil on his tiny body.",
+    "After the bath, the baby wears soft clothes.",
+    "Mom combs his hair and puts on a dot of kohl.",
+    "A sweet smell fills the whole house.",
+    "Clean and cozy, the baby falls asleep.",
+    "Mom takes the dirty clothes to wash."]},
+   c:{n:"Family Laps",s:[
+    "Dad comes home from work and picks up the baby.",
+    "The baby lies quietly in dad's arms.",
+    "Mom uses the time to go and cook.",
+    "From the kitchen, mom peeks out again and again.",
+    "Suddenly the baby pees in dad's lap.",
+    "Dad laughs and says, oh no, my clothes are wet.",
+    "Dada takes the baby and sits on the porch.",
+    "The baby pees in Dada's lap too.",
+    "Dada bursts out laughing.",
+    "Chachu plays with the baby for a while.",
+    "Soon the baby poops in Chachu's lap.",
+    "Chachu holds his nose and runs away.",
+    "Everyone laughs together.",
+    "Dadi also takes the baby and gives him love.",
+    "The baby pees in Dadi's lap as well.",
+    "Dadi says, this baby plays tricks on everyone.",
+    "Mom comes and cleans the baby up.",
+    "The sound of the baby's laugh fills the house."]},
+   d:{n:"Walks & Outings",s:[
+    "In the afternoon, mom walks around the room with the baby.",
+    "The baby rests his head on mom's shoulder.",
+    "Mom gently pats his back.",
+    "A cool breeze is blowing outside.",
+    "Mom wraps the baby in a soft blanket.",
+    "Dad carries the baby and goes outside.",
+    "The baby looks at the trees with wide eyes.",
+    "When a bird sings, he looks up in surprise.",
+    "Mom says, look at that bird.",
+    "A neighbor aunty comes to see the baby.",
+    "She says, what a lovely baby.",
+    "Mom smiles sweetly and says thank you.",
+    "On doctor day, mom packs a bag.",
+    "The bag has diapers, milk and a towel.",
+    "At home, mom lays the baby on the bed.",
+    "Before long, the baby is three months old.",
+    "Now he smiles when he looks at mom.",
+    "That smile is mom's greatest joy."]}
+  }
+ }
 };
 const DURS=[[15,"১৫ সেক"],[30,"৩০ সেক"],[60,"১ মিনিট"],[180,"৩ মিনিট"],[300,"৫ মিনিট"],[600,"১০ মিনিট"],[1200,"২০ মিনিট"],[1800,"৩০ মিনিট"]];
 const $=id=>document.getElementById(id);
-const bn=n=>String(n).replace(/\d/g,d=>"০১২৩৪৫৬৭৮৯"[d]);
-const fmt=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
 const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const set=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const fmt=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
 
-let dur=+get("ats-dur")||600,setKey=get("ats-set")||"a",shuffle=get("ats-shuf")==="1",sound=get("ats-snd")!=="0",fs=+get("ats-fs")||1.7;
-let left=dur,timer=null,started=false,paused=false,idx=0,okW=0,badW=0,okChars=0,typedChars=0,list=[],samples=[],actx=null,lastText="";
+let lang=get("ats-lang")==="en"?"en":"bn";
+const nm=n=>lang==="en"?String(n):String(n).replace(/\d/g,d=>"০১২৩৪৫৬৭৮৯"[d]);   /* সংখ্যা: বাংলা মোডে বাংলা অঙ্ক */
+let dur=+get("ats-dur")||600,setKey=get("ats-set")||"a",shuffle=get("ats-shuf")==="1",sound=get("ats-snd")!=="0",voiceOn=get("ats-voice")!=="0",fs=+get("ats-fs")||1.7;
+if(!LANGS[lang].sets[setKey])setKey="a";
+let left=dur,timer=null,started=false,paused=false,idx=0,okW=0,badW=0,okChars=0,typedChars=0,list=[],samples=[],lastText="",wordErr=false;
+const PASS_ACC=80; /* সফল হতে কমপক্ষে এই নির্ভুলতা (%) লাগবে */
+const bestKey=()=>lang==="bn"?"ats-best-"+dur:"ats-best-en-"+dur;
 
-function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)}
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),2600)}
+function bump(el){el.classList.remove("bump");void el.offsetWidth;el.classList.add("bump")}
 
-/* ---------- theme, sound, fullscreen, font size ---------- */
-if(get("ats-theme"))document.documentElement.dataset.theme=get("ats-theme");
-$("themeBtn").onclick=()=>{const t=document.documentElement.dataset.theme==="light"?"dark":"light";document.documentElement.dataset.theme=t;set("ats-theme",t)};
-function paintSound(){$("soundBtn").innerHTML=`<i class="fa-solid ${sound?"fa-volume-high":"fa-volume-xmark"}"></i>`}
-$("soundBtn").onclick=()=>{sound=!sound;set("ats-snd",sound?"1":"0");paintSound();$("typebox").focus()};
-paintSound();
-$("fsBtn").onclick=()=>{
-  const on=!!document.fullscreenElement;
-  (on?document.exitFullscreen():document.documentElement.requestFullscreen()).catch(()=>{});
-};
-document.addEventListener("fullscreenchange",()=>{$("fsBtn").innerHTML=`<i class="fa-solid ${document.fullscreenElement?"fa-compress":"fa-expand"}"></i>`});
-function applyFs(){document.documentElement.style.setProperty("--fs",fs+"rem");set("ats-fs",fs)}
-$("fPlus").onclick=()=>{fs=Math.min(2.6,fs+.15);applyFs();scrollTo(idx)};
-$("fMinus").onclick=()=>{fs=Math.max(1.1,fs-.15);applyFs();scrollTo(idx)};
-applyFs();
-const errAudio=new Audio("error.mp3");errAudio.preload="auto";
-let wordErr=false;
-const WPM_TARGET=60; /* text length per minute: 60 words for every minute selected */
-const doneAudio=new Audio("done.mp3");doneAudio.preload="auto";
-const PASS_ACC=80; /* success needs at least this much accuracy (%) */
-const failAudio=new Audio("fail.mp3");failAudio.preload="auto";
-const correctAudio=new Audio("correct.mp3");correctAudio.preload="auto";
-function playCorrect(){
+/* =====================================================================
+   AUDIO ENGINE (iPhone / Android এ ভয়েস না চলার সমাধান)
+   - Web Audio API দিয়ে mp3 আগেই decode করে রাখা হয় → প্লে করতে দেরি/আটকে যাওয়া নেই
+   - প্রথম ট্যাপ/ক্লিকেই অডিও "আনলক" হয়, ফোন অন্য অ্যাপ/কল থেকে ফিরলে আবার চালু হয়
+   - iPhone এর সাইলেন্ট সুইচ থাকলেও সাউন্ড বাজার চেষ্টা করে (audioSession)
+   - ফাইল সরাসরি খুললে (file://) পুরনো পদ্ধতিতে (Audio এলিমেন্ট) নিজে থেকে বদলে যায়
+   ===================================================================== */
+const SND={correct:"correct.mp3",error:"error.mp3",done:"done.mp3",fail:"fail.mp3"};
+const AC=window.AudioContext||window.webkitAudioContext;
+let actx=null,bufs={},waReady=false,waFailed=false,primed=false,htmlPrimed=false,pend=null;
+const playing={},htmlA={};
+function getCtx(){if(!actx&&AC){try{actx=new AC()}catch(e){}}return actx}
+function initHtmlAudio(){Object.entries(SND).forEach(([k,u])=>{if(!htmlA[k]){const a=new Audio(u);a.preload="auto";htmlA[k]=a}})}
+async function loadBufs(){
+  const c=getCtx();
+  if(!c){waFailed=true;initHtmlAudio();return}
+  try{
+    await Promise.all(Object.entries(SND).map(async([k,u])=>{
+      const r=await fetch(u);if(!r.ok)throw new Error(u);
+      const ab=await r.arrayBuffer();
+      bufs[k]=await new Promise((res,rej)=>{const p=c.decodeAudioData(ab,res,rej);if(p&&p.catch)p.catch(rej)});
+    }));
+    waReady=true;
+  }catch(e){waFailed=true;initHtmlAudio()}
+}
+function unlock(){
+  try{if(navigator.audioSession)navigator.audioSession.type="playback"}catch(e){}
+  const c=getCtx();
+  if(c){
+    if(c.state!=="running")c.resume().catch(()=>{});
+    if(!primed){try{const s=c.createBufferSource();s.buffer=c.createBuffer(1,1,22050);s.connect(c.destination);s.start(0)}catch(e){}}
+    if(c.state==="running")primed=true;
+  }
+  if(waFailed&&!htmlPrimed){
+    htmlPrimed=true;
+    Object.values(htmlA).forEach(a=>{
+      a.muted=true;const done=()=>{a.pause();a.currentTime=0;a.muted=false};
+      const p=a.play();if(p&&p.then)p.then(done).catch(()=>{a.muted=false;htmlPrimed=false});else done();
+    });
+  }
+  primeSpeech();
+}
+["pointerdown","touchend","click","keydown"].forEach(ev=>document.addEventListener(ev,unlock,{passive:true,capture:true}));
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&actx&&actx.state!=="running")actx.resume().catch(()=>{})});
+loadBufs();
+
+function stopSnd(k){const s=playing[k];if(!s)return;try{if(s.stop)s.stop();else{s.pause();s.currentTime=0}}catch(e){}playing[k]=null}
+const isPlaying=k=>!!playing[k];
+function play(k){
   if(!sound)return;
-  if(!errAudio.paused&&!errAudio.ended)return; /* never talk over the error voice */
-  if(!correctAudio.paused&&!correctAudio.ended)return; /* already playing: let it finish once */
-  correctAudio.currentTime=0;
-  correctAudio.play().catch(()=>{});
+  const c=actx;
+  if(waReady&&c&&bufs[k]){
+    const go=()=>{try{const s=c.createBufferSource();s.buffer=bufs[k];s.connect(c.destination);s.onended=()=>{if(playing[k]===s)playing[k]=null};playing[k]=s;s.start(0)}catch(e){playing[k]=null}};
+    if(c.state==="running"){go()}
+    else{pend=k;c.resume().then(()=>{if(pend===k){pend=null;go()}}).catch(()=>{})}
+    return;
+  }
+  const a=htmlA[k];if(!a)return;
+  try{a.currentTime=0}catch(e){}
+  const p=a.play();if(p&&p.catch)p.catch(()=>{});
+  playing[k]=a;a.onended=()=>{if(playing[k]===a)playing[k]=null};
+}
+function playCorrect(){if(isPlaying("error")||isPlaying("correct"))return;play("correct")}
+function playError(){
+  if(!sound)return;
+  stopSpeech();
+  if(isPlaying("error"))return;
+  stopSnd("correct");play("error");
 }
 function playResult(ok){
   if(!sound)return;
-  errAudio.pause();correctAudio.pause();
-  const a=ok?doneAudio:failAudio,b=ok?failAudio:doneAudio;
-  b.pause();a.currentTime=0;a.play().catch(()=>{});
-}
-function playError(){
-  if(!sound)return;
-  if(!errAudio.paused&&!errAudio.ended)return; /* already playing: let it finish once */
-  correctAudio.pause();
-  errAudio.currentTime=0;
-  errAudio.play().catch(()=>{});
+  ["error","correct",ok?"fail":"done"].forEach(stopSnd);
+  play(ok?"done":"fail");
 }
 function beep(f,d,v){
-  if(!sound)return;
+  if(!sound||!actx||actx.state!=="running")return;
   try{
-    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
     const o=actx.createOscillator(),g=actx.createGain();
     o.frequency.value=f;o.type="sine";g.gain.value=v;
     o.connect(g);g.connect(actx.destination);o.start();
@@ -309,31 +623,129 @@ function beep(f,d,v){
   }catch(e){}
 }
 
+/* =====================================================================
+   শব্দের ভয়েস (Text-to-Speech) — যে শব্দ লেখা হয় সেটি নিজে থেকে উচ্চারিত হয়
+   ডিভাইসের বিল্ট-ইন কণ্ঠস্বর ব্যবহার হয় (বাংলা: bn-BD / bn-IN, ইংরেজি: en-US)
+   ===================================================================== */
+const SS=("speechSynthesis" in window)?window.speechSynthesis:null;
+let voices=[],voiceWarned=false,speechPrimed=false;
+function loadVoices(){if(SS){try{voices=SS.getVoices()||[]}catch(e){}}}
+if(SS){loadVoices();if(SS.addEventListener)SS.addEventListener("voiceschanged",loadVoices);else SS.onvoiceschanged=loadVoices}
+const normL=l=>(l||"").toLowerCase().replace("_","-");
+function pickVoice(){
+  const prefs=lang==="bn"?["bn-bd","bn-in","bn"]:["en-us","en-gb","en"];
+  for(const p of prefs){const v=voices.find(v=>normL(v.lang)===p)||voices.find(v=>normL(v.lang).startsWith(p));if(v)return v}
+  return null;
+}
+function primeSpeech(){
+  if(!SS||speechPrimed)return;speechPrimed=true;
+  try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;SS.speak(u)}catch(e){}
+}
+function stopSpeech(){if(SS){try{SS.cancel()}catch(e){}}$("talk").classList.remove("on")}
+function speakWord(w){
+  if(!SS||!sound||!voiceOn||!w)return false;
+  const clean=w.replace(/[।,.!?;:"'‘’“”()\-]/g,"").trim();
+  if(!clean)return false;
+  try{
+    loadVoices();
+    const v=pickVoice();
+    if(!v&&voices.length&&lang==="bn"&&!voiceWarned){voiceWarned=true;toast("এই ফোনে বাংলা ভয়েস পাওয়া যায়নি। সেটিংস থেকে বাংলা টেক্সট-টু-স্পিচ ইনস্টল করুন।")}
+    SS.cancel();
+    const u=new SpeechSynthesisUtterance(clean);
+    if(v){u.voice=v;u.lang=v.lang}else u.lang=lang==="bn"?"bn-BD":"en-US";
+    u.rate=lang==="bn"?.95:1;u.pitch=1;u.volume=1;
+    u.onstart=()=>$("talk").classList.add("on");
+    u.onend=u.onerror=()=>$("talk").classList.remove("on");
+    SS.speak(u);
+    return true;
+  }catch(e){return false}
+}
+
+/* ---------- theme, sound, voice, fullscreen, font size ---------- */
+if(get("ats-theme"))document.documentElement.dataset.theme=get("ats-theme");
+$("themeBtn").onclick=()=>{const t=document.documentElement.dataset.theme==="light"?"dark":"light";document.documentElement.dataset.theme=t;set("ats-theme",t)};
+function paintSound(){$("soundBtn").innerHTML=`<i class="fa-solid ${sound?"fa-volume-high":"fa-volume-xmark"}"></i>`}
+function paintVoice(){$("voiceBtn").classList.toggle("off",!(voiceOn&&sound))}
+$("soundBtn").onclick=()=>{sound=!sound;set("ats-snd",sound?"1":"0");if(!sound)stopSpeech();paintSound();paintVoice();$("typebox").focus()};
+$("voiceBtn").onclick=()=>{
+  if(voiceOn&&sound){voiceOn=false;stopSpeech();toast("শব্দের ভয়েস বন্ধ")}
+  else{voiceOn=true;if(!sound){sound=true;set("ats-snd","1");paintSound()}toast("শব্দের ভয়েস চালু");speakWord(list[idx])}
+  set("ats-voice",voiceOn?"1":"0");paintVoice();$("typebox").focus();
+};
+paintSound();paintVoice();
+const de=document.documentElement;
+if(!(de.requestFullscreen||de.webkitRequestFullscreen))$("fsBtn").style.display="none";
+$("fsBtn").onclick=()=>{
+  const on=!!document.fullscreenElement;
+  try{(on?document.exitFullscreen():de.requestFullscreen()).catch(()=>{})}catch(e){}
+};
+document.addEventListener("fullscreenchange",()=>{$("fsBtn").innerHTML=`<i class="fa-solid ${document.fullscreenElement?"fa-compress":"fa-expand"}"></i>`});
+function applyFs(){de.style.setProperty("--fs",fs+"rem");set("ats-fs",fs)}
+$("fPlus").onclick=()=>{fs=Math.min(2.6,fs+.15);applyFs();scrollWords(idx)};
+$("fMinus").onclick=()=>{fs=Math.max(1.1,fs-.15);applyFs();scrollWords(idx)};
+applyFs();
+
+/* ---------- language ---------- */
+function applyLang(){
+  const L=LANGS[lang];
+  $("heroT").textContent=L.hero;$("heroP").textContent=L.sub;
+  $("typebox").placeholder=L.ph;$("typebox").lang=lang;
+  $("tile3i").className="fa-solid "+L.tile[0];$("tile3h").textContent=L.tile[1];$("tile3p").textContent=L.tile[2];
+  document.title=lang==="en"?"Aisha’s typing speed — English":"Aisha’s typing speed";
+}
+function setLang(l){
+  if(l===lang)return;
+  lang=l;set("ats-lang",l);stopSpeech();
+  if(!LANGS[lang].sets[setKey])setKey="a";
+  voiceWarned=false;
+  applyLang();chips();reset();
+}
+
 /* ---------- option chips ---------- */
+function mkChip(parent,label,on,fn){const b=document.createElement("button");b.className="chip"+(on?" on":"");b.textContent=label;b.onclick=fn;parent.appendChild(b)}
 function chips(){
-  $("durs").querySelectorAll(".chip").forEach(c=>c.remove());
-  DURS.forEach(([s,l])=>{const b=document.createElement("button");b.className="chip"+(s===dur?" on":"");b.textContent=l;b.onclick=()=>{dur=s;set("ats-dur",s);chips();reset()};$("durs").appendChild(b)});
-  $("sets").querySelectorAll(".chip").forEach(c=>c.remove());
-  Object.entries(SETS).forEach(([k,v])=>{const b=document.createElement("button");b.className="chip"+(k===setKey?" on":"");b.textContent=v.n;b.onclick=()=>{setKey=k;set("ats-set",k);chips();reset()};$("sets").appendChild(b)});
+  ["langs","durs","sets"].forEach(id=>$(id).querySelectorAll(".chip").forEach(c=>c.remove()));
+  mkChip($("langs"),"বাংলা",lang==="bn",()=>setLang("bn"));
+  mkChip($("langs"),"English",lang==="en",()=>setLang("en"));
+  DURS.forEach(([s,l])=>mkChip($("durs"),l,s===dur,()=>{dur=s;set("ats-dur",s);chips();reset()}));
+  Object.entries(LANGS[lang].sets).forEach(([k,v])=>mkChip($("sets"),v.n,k===setKey,()=>{setKey=k;set("ats-set",k);chips();reset()}));
   $("shufBtn").classList.toggle("on",shuffle);
 }
 $("shufBtn").onclick=()=>{shuffle=!shuffle;set("ats-shuf",shuffle?"1":"0");chips();reset()};
 
 /* ---------- build & reset ---------- */
 function build(){
-  const sents=SETS[setKey].t.split("।").map(s=>s.trim()).filter(Boolean);
-  const target=Math.max(12,Math.round(dur/60*WPM_TARGET));
+  const L=LANGS[lang],keys=Object.keys(L.sets),order=[setKey,...keys.filter(k=>k!==setKey)];
+  /* নতুনদের জন্য: সময় অনুযায়ী ছোট টেক্সট (মিনিটে L.rate টি শব্দ) */
+  const target=Math.max(5,Math.round(dur/60*L.rate));
   list=[];
-  while(list.length<target){
-    const s=sents.slice();
-    if(shuffle)s.sort(()=>Math.random()-.5);
-    s.forEach(x=>list.push(...(x+"।").split(/\s+/)));
+  let guard=0;
+  while(list.length<target&&guard++<30){
+    order.forEach(k=>{
+      const s=L.sets[k].s.slice();
+      if(shuffle)s.sort(()=>Math.random()-.5);
+      s.forEach(x=>list.push(...x.split(/\s+/)));
+    });
   }
   list=list.slice(0,target);
   $("words").innerHTML=list.map((w,i)=>`<span class="w" id="w${i}">${w}</span>`).join(" ");
+  $("words").classList.remove("swap");void $("words").offsetWidth;$("words").classList.add("swap");
+}
+const CIRC=119.38;
+function paintPop(){
+  $("tpTime").textContent=fmt(left);
+  $("ringP").style.strokeDashoffset=((1-left/dur)*CIRC).toFixed(2);
+  $("tpWpm").textContent=nm(wpm());$("tpAcc").textContent=nm(acc())+"%";
+  $("tpop").classList.toggle("low",started&&!paused&&left<=10&&left>0);
+}
+function showPop(on){
+  $("tpop").classList.toggle("show",on);
+  $("tpop").setAttribute("aria-hidden",on?"false":"true");
+  document.body.classList.toggle("running",on&&!paused);
 }
 function reset(){
   clearInterval(timer);started=false;paused=false;wordErr=false;idx=0;okW=badW=okChars=typedChars=0;left=dur;samples=[];
+  stopSpeech();
   build();paintWc();
   $("w0").classList.add("cur");
   $("words").style.transform="translateY(0)";
@@ -342,7 +754,11 @@ function reset(){
   $("typebox").value="";$("typebox").disabled=false;$("typebox").classList.remove("err");
   $("pauseBtn").innerHTML='<i class="fa-solid fa-pause"></i> বিরতি';
   $("result").classList.remove("show");
-  $("sBest").textContent=bn(get("ats-best-"+dur)||0);
+  $("sBest").textContent=nm(get(bestKey())||0);
+  /* timer popup reset */
+  const rp=$("ringP");rp.style.transition="none";rp.style.strokeDashoffset="0";void rp.getBoundingClientRect();rp.style.transition="";
+  $("tpop").classList.remove("paused","low");$("tpLabel").textContent="সময় বাকি";
+  showPop(false);paintPop();
   $("typebox").focus();
 }
 
@@ -355,15 +771,17 @@ function tick(){
   if(paused)return;
   left--;
   $("sTime").textContent=fmt(left);
-  $("sWpm").textContent=bn(wpm());
+  $("sWpm").textContent=nm(wpm());
   samples.push(wpm());
   $("bar").style.transition="width 1s linear";
   $("bar").style.width=(left/dur*100)+"%";
+  paintPop();
+  if(left<=10)bump($("tpTime"));
   if(left<=0)finish();
 }
-function start(){started=true;timer=setInterval(tick,1000)}
+function start(){started=true;timer=setInterval(tick,1000);showPop(true);paintPop()}
 
-function scrollTo(i){
+function scrollWords(i){
   const n=$("w"+i);if(!n)return;
   const line=parseFloat(getComputedStyle($("words")).lineHeight);
   $("words").style.transform="translateY(-"+Math.max(0,n.offsetTop-line)+"px)";
@@ -375,48 +793,74 @@ function commit(){
   const target=list[idx],el=$("w"+idx);
   typedChars+=target.length+1;
   el.classList.remove("cur","err");
-  if(typed===target){okW++;okChars+=target.length+1;el.classList.add("ok");playCorrect()}
-  else{badW++;el.classList.add("bad");if(!wordErr)playError()}
+  if(typed===target){
+    okW++;okChars+=target.length+1;el.classList.add("ok");
+    /* শব্দ ঠিক হলে: ভয়েস চালু থাকলে শব্দটি উচ্চারিত হবে, না হলে সাধারণ "correct" সাউন্ড */
+    const last=idx+1>=list.length;
+    if(!last&&voiceOn&&SS&&sound){if(!speakWord(target))playCorrect()}
+    else if(!last)playCorrect();
+  }else{badW++;el.classList.add("bad");if(!wordErr)playError()}
   wordErr=false;
   box.value="";box.classList.remove("err");idx++;
   const next=$("w"+idx);
-  if(next){next.classList.add("cur");scrollTo(idx)}
-  $("sWpm").textContent=bn(wpm());$("sAcc").textContent=bn(acc())+"%";
-  paintWc();
+  if(next){next.classList.add("cur");scrollWords(idx)}
+  $("sWpm").textContent=nm(wpm());$("sAcc").textContent=nm(acc())+"%";
+  bump($("sWpm"));
+  paintPop();paintWc();
   if(idx>=list.length)finish();
 }
-function paintWc(){$("wc").innerHTML=`<i class="fa-solid fa-align-left"></i> শব্দ: ${bn(idx)} / ${bn(list.length)}`}
+function paintWc(){$("wc").innerHTML=`<i class="fa-solid fa-align-left"></i> শব্দ: ${nm(idx)} / ${nm(list.length)}`}
 
 function chart(){
   if(samples.length<2){$("chart").innerHTML="";return}
   const max=Math.max(...samples,10),W=300,H=80;
   const pts=samples.map((v,i)=>(i/(samples.length-1)*W).toFixed(1)+","+(H-v/max*(H-8)-4).toFixed(1)).join(" ");
-  $("chart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
+  $("chart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><polyline pathLength="1" points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
 }
 function hist(){try{return JSON.parse(get("ats-hist")||"[]")}catch(e){return[]}}
+function countUp(el,to,pct){
+  const dec=pct&&!Number.isInteger(to),t0=performance.now(),D=900;
+  (function f(t){
+    const p=Math.min(1,(t-t0)/D),e=1-Math.pow(1-p,3),v=to*e;
+    el.textContent=nm(dec?Math.round(v*10)/10:Math.round(v))+(pct?"%":"");
+    if(p<1)requestAnimationFrame(f);
+  })(t0);
+}
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const box=document.createElement("div");box.className="confetti";
+  const cols=["#2dd4a7","#f5b942","#ff7a6b","#6366f1","#38bdf8","#f472b6"];
+  for(let i=0;i<54;i++){
+    const p=document.createElement("i");
+    p.style.cssText=`left:${Math.random()*100}%;background:${cols[i%cols.length]};animation-delay:${(Math.random()*.7).toFixed(2)}s;animation-duration:${(2.2+Math.random()*1.6).toFixed(2)}s;--r:${Math.round(Math.random()*720-360)}deg;--x:${Math.round(Math.random()*160-80)}px;width:${6+Math.random()*6}px;height:${10+Math.random()*8}px`;
+    box.appendChild(p);
+  }
+  document.body.appendChild(box);setTimeout(()=>box.remove(),4600);
+}
 
 function finish(){
   const elapsed=Math.max(1,dur-left);
   clearInterval(timer);left=0;started=false;
+  showPop(false);
   $("sTime").textContent=fmt(0);$("bar").style.width="0%";$("typebox").disabled=true;
   const w=Math.round(okChars/5/(elapsed/60)),a=acc();
   const pass=a>=PASS_ACC&&okW+badW>0;
   $("result").classList.toggle("fail",!pass);
   $("rTitle").innerHTML=pass
     ?'<i class="fa-solid fa-circle-check"></i> সফল!'
-    :'<i class="fa-solid fa-circle-xmark"></i> ব্যর্থ — নির্ভুলতা '+bn(PASS_ACC)+'%-এর নিচে';
-  $("sWpm").textContent=bn(w);
-  $("rWpm").textContent=bn(w);$("rAcc").textContent=bn(a)+"%";
-  $("rWords").textContent=bn(okW);$("rWrong").textContent=bn(badW);
+    :'<i class="fa-solid fa-circle-xmark"></i> ব্যর্থ — নির্ভুলতা '+nm(PASS_ACC)+'%-এর নিচে';
+  $("sWpm").textContent=nm(w);
   $("rLevel").textContent=level(w);
-  const best=+get("ats-best-"+dur)||0,rec=w>best&&w>0;
+  const best=+get(bestKey())||0,rec=w>best&&w>0;
   $("rRec").hidden=!rec;
-  if(rec){set("ats-best-"+dur,w);$("sBest").textContent=bn(w)}
-  const h=hist();h.unshift({d:Date.now(),dur,w,a});set("ats-hist",JSON.stringify(h.slice(0,30)));
-  lastText=`Aisha’s typing speed: ${bn(w)} WPM, নির্ভুলতা ${bn(a)}% (${DURS.find(x=>x[0]===dur)[1]})`;
-  chart();
+  if(rec){set(bestKey(),w);$("sBest").textContent=nm(w)}
+  const h=hist();h.unshift({d:Date.now(),dur,w,a,l:lang});set("ats-hist",JSON.stringify(h.slice(0,30)));
+  lastText=`Aisha’s typing speed: ${nm(w)} WPM, নির্ভুলতা ${nm(a)}% (${DURS.find(x=>x[0]===dur)[1]})`;
   $("result").classList.add("show");
+  countUp($("rWpm"),w);countUp($("rAcc"),a,true);countUp($("rWords"),okW);countUp($("rWrong"),badW);
+  chart();
   playResult(pass);
+  if(pass)confetti();
   $("result").scrollIntoView({behavior:"smooth",block:"center"});
 }
 
@@ -430,7 +874,7 @@ $("typebox").addEventListener("input",e=>{
   cur.classList.toggle("err",!ok);e.target.classList.toggle("err",!ok);
   if(!ok&&!wordErr){wordErr=true;playError()}
   else if(ok){wordErr=false;beep(420,.03,.02)}
-  if(idx===list.length-1&&v.trim()===list[idx])commit(); /* last word: no Space needed, finish right away */
+  if(idx===list.length-1&&v.trim()===list[idx])commit(); /* শেষ শব্দে Space লাগবে না */
 });
 $("typebox").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();commit()}});
 $("typebox").addEventListener("focus",()=>$("board").classList.remove("idle"));
@@ -442,11 +886,16 @@ function togglePause(){
   paused=!paused;
   $("pauseBtn").innerHTML=paused?'<i class="fa-solid fa-play"></i> চালু করুন':'<i class="fa-solid fa-pause"></i> বিরতি';
   $("typebox").disabled=paused;
+  $("tpop").classList.toggle("paused",paused);
+  $("tpLabel").textContent=paused?"বিরতি চলছে":"সময় বাকি";
+  document.body.classList.toggle("running",!paused);
+  if(paused)stopSpeech();
+  paintPop();
   if(!paused)$("typebox").focus();
 }
 $("pauseBtn").onclick=togglePause;
 $("restart").onclick=reset;
-$("again").onclick=()=>{reset();scrollTo(0);window.scrollTo({top:0,behavior:"smooth"})};
+$("again").onclick=()=>{reset();window.scrollTo({top:0,behavior:"smooth"})};
 document.addEventListener("keydown",e=>{
   if(e.key==="Tab"){e.preventDefault();$("restart").focus()}
   if(e.key==="Escape"&&!$("hist").open)reset();
@@ -461,7 +910,7 @@ function paintHist(){
   const h=hist();
   $("hBody").innerHTML=h.length
     ?`<div class="row head"><span>তারিখ</span><span>সময়</span><span>WPM</span><span>নির্ভুলতা</span></div>`+
-      h.map(r=>`<div class="row"><span>${new Date(r.d).toLocaleDateString("bn-BD",{day:"numeric",month:"short"})}</span><span>${DURS.find(x=>x[0]===r.dur)?.[1]||bn(r.dur)}</span><span><b>${bn(r.w)}</b></span><span>${bn(r.a)}%</span></div>`).join("")
+      h.map((r,i)=>`<div class="row" style="animation-delay:${Math.min(i,10)*.04}s"><span>${new Date(r.d).toLocaleDateString("bn-BD",{day:"numeric",month:"short"})}${r.l==="en"?" · EN":""}</span><span>${DURS.find(x=>x[0]===r.dur)?.[1]||nm(r.dur)}</span><span><b>${nm(r.w)}</b></span><span>${nm(r.a)}%</span></div>`).join("")
     :`<p class="empty">এখনও কোনো ফলাফল নেই।</p>`;
 }
 $("histBtn").onclick=()=>{paintHist();$("hist").showModal()};
@@ -469,7 +918,25 @@ $("hClose").onclick=()=>$("hist").close();
 $("hClear").onclick=()=>{set("ats-hist","[]");paintHist();toast("ইতিহাস মুছে ফেলা হয়েছে")};
 $("hist").addEventListener("click",e=>{if(e.target===$("hist"))$("hist").close()});
 
-chips();reset();
+/* ---------- ripple on buttons ---------- */
+document.addEventListener("pointerdown",e=>{
+  const b=e.target.closest&&e.target.closest(".primary,.second,.chip,.ibtn");
+  if(!b)return;
+  const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height),sp=document.createElement("span");
+  sp.className="rip";
+  sp.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;
+  b.appendChild(sp);setTimeout(()=>sp.remove(),650);
+});
+
+/* ---------- scroll reveal ---------- */
+(function(){
+  const els=document.querySelectorAll(".rv");
+  if(!("IntersectionObserver" in window)){els.forEach(e=>e.classList.add("in"));return}
+  const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add("in");io.unobserve(x.target)}}),{threshold:.15});
+  els.forEach(e=>io.observe(e));
+})();
+
+applyLang();chips();reset();
 </script>
 </body>
 </html>
