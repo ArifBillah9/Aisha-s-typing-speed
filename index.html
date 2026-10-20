@@ -5,11 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d1117">
 <title>Aisha’s typing speed</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/noto-sans-bengali-bengali-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/noto-sans-bengali-bengali-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
+/* ===== self-hosted fonts (iPhone-safe, no Google Fonts dependency) ===== */
+@font-face{font-family:'Noto Sans Bengali Local';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/noto-sans-bengali-bengali-400-normal.woff2') format('woff2');unicode-range:U+0964-0965,U+0980-09FE,U+200C-200D,U+25CC}
+@font-face{font-family:'Noto Sans Bengali Local';font-style:normal;font-weight:500;font-display:swap;src:url('fonts/noto-sans-bengali-bengali-500-normal.woff2') format('woff2');unicode-range:U+0964-0965,U+0980-09FE,U+200C-200D,U+25CC}
+@font-face{font-family:'Noto Sans Bengali Local';font-style:normal;font-weight:600;font-display:swap;src:url('fonts/noto-sans-bengali-bengali-600-normal.woff2') format('woff2');unicode-range:U+0964-0965,U+0980-09FE,U+200C-200D,U+25CC}
+@font-face{font-family:'Noto Sans Bengali Local';font-style:normal;font-weight:700;font-display:swap;src:url('fonts/noto-sans-bengali-bengali-700-normal.woff2') format('woff2');unicode-range:U+0964-0965,U+0980-09FE,U+200C-200D,U+25CC}
+@font-face{font-family:'League Spartan Local';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/league-spartan-latin-400-normal.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'League Spartan Local';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/league-spartan-latin-ext-400-normal.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'League Spartan Local';font-style:normal;font-weight:500;font-display:swap;src:url('fonts/league-spartan-latin-500-normal.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'League Spartan Local';font-style:normal;font-weight:500;font-display:swap;src:url('fonts/league-spartan-latin-ext-500-normal.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'League Spartan Local';font-style:normal;font-weight:600;font-display:swap;src:url('fonts/league-spartan-latin-600-normal.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'League Spartan Local';font-style:normal;font-weight:600;font-display:swap;src:url('fonts/league-spartan-latin-ext-600-normal.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'League Spartan Local';font-style:normal;font-weight:700;font-display:swap;src:url('fonts/league-spartan-latin-700-normal.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'League Spartan Local';font-style:normal;font-weight:700;font-display:swap;src:url('fonts/league-spartan-latin-ext-700-normal.woff2') format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+
 :root{
   --bg:#0d1117; --bg2:#141b26; --card:#171f2d; --line:#263246;
   --text:#e8edf5; --muted:#8a97ad; --accent:#2dd4a7; --accent-ink:#04261d;
@@ -23,14 +36,18 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-  font-family:'League Spartan','Kalpurush','Hind Siliguri','Noto Sans Bengali',sans-serif;
+  font-family:'League Spartan Local','Noto Sans Bengali Local','Kohinoor Bangla','Bangla Sangam MN','Noto Sans Bengali','Hind Siliguri','Kalpurush','SolaimanLipi',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   background:radial-gradient(900px 500px at 15% -10%,rgba(45,212,167,.10),transparent 60%),var(--bg);
   color:var(--text);min-height:100vh;min-height:100dvh;line-height:1.6;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;
 }
 /* English font (forced) */
-body,button,input,select,dialog{font-family:'League Spartan','Kalpurush','Hind Siliguri','Noto Sans Bengali',sans-serif !important}
+body,button,input,select,dialog{font-family:'League Spartan Local','Noto Sans Bengali Local','Kohinoor Bangla','Bangla Sangam MN','Noto Sans Bengali','Hind Siliguri','Kalpurush','SolaimanLipi',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif !important}
 /* Bengali font */
-.bn,.bn *:not(i){font-family:'League Spartan','SolaimanLipi','Kalpurush','Noto Sans Bengali','Amiri',sans-serif !important}
+.bn,.bn *:not(i){font-family:'League Spartan Local','Noto Sans Bengali Local','Kohinoor Bangla','Bangla Sangam MN','Noto Sans Bengali','Hind Siliguri','Kalpurush','SolaimanLipi',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif !important}
+/* iOS: avoid Bengali conjunct clipping & fake bold/italic */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;font-synthesis:none}
+body{-webkit-font-smoothing:antialiased;text-rendering:auto;font-kerning:normal}
+.hero h1{padding:.08em 0 .22em}
 i.fa-solid,i.fa-regular{font-family:"Font Awesome 6 Free" !important}
 i.fa-solid{font-weight:900}
 
@@ -223,11 +240,12 @@ dialog::backdrop{background:rgba(0,0,0,.55);animation:fadeIn .3s ease}
   .stat small{font-size:.78rem}
   .stat b{font-size:1.45rem}
   section.info{grid-template-columns:1fr}
-  .opts{flex-direction:column;align-items:stretch;gap:10px;margin-bottom:12px}
-  .opts .group{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:2px 1px 4px;margin:0 -14px;padding-left:14px;padding-right:14px}
-  .opts .group::-webkit-scrollbar{display:none}
-  .opts .group>span,.opts .chip{flex:none;white-space:nowrap}
-  .chip{padding:7px 15px}
+  .opts{flex-direction:column;align-items:stretch;gap:12px;margin-bottom:12px}
+  /* চিপগুলো আর পাশে স্ক্রল করবে না — স্ক্রিনের মাপ অনুযায়ী পরের লাইনে নামবে */
+  .opts .group{flex-wrap:wrap;overflow:visible;gap:8px;margin:0;padding:0;width:100%;min-width:0}
+  .opts .group>span{flex:0 0 100%;font-size:.88rem;margin:0 0 -2px}
+  .opts .chip{flex:0 1 auto;white-space:normal;text-align:center;line-height:1.35;min-height:38px;display:inline-flex;align-items:center;justify-content:center;max-width:100%}
+  .chip{padding:7px 14px}
   .board{height:190px;padding:16px 16px;border-radius:14px}
   #words{font-size:calc(var(--fs)*.9);line-height:calc(var(--fs)*.9*1.5)}
   .input-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
@@ -265,6 +283,8 @@ dialog::backdrop{background:rgba(0,0,0,.55);animation:fadeIn .3s ease}
   .tp-main b{font-size:1.3rem}
 }
 @media(max-width:380px){
+  .opts .chip{padding:7px 11px;font-size:.88rem}
+  #langs .chip{flex:1 1 0}
   .brand{font-size:.84rem;line-height:1.15}
   .brand span{white-space:normal}
   .ibtn{width:32px;height:32px}
@@ -951,13 +971,6 @@ function chips(){
   DURS.forEach(([s,l])=>mkChip($("durs"),l,s===dur,()=>{dur=s;set("ats-dur",s);chips();reset()}));
   Object.entries(LANGS[lang].sets).forEach(([k,v])=>mkChip($("sets"),v.n,k===setKey,()=>{setKey=k;set("ats-set",k);chips();reset()}));
   $("shufBtn").classList.toggle("on",shuffle);
-  /* মোবাইলে চিপ-সারি স্ক্রল হয়: সক্রিয় চিপটি যেন দেখা যায় */
-  ["langs","durs","sets"].forEach(id=>{
-    const g=$(id),on=g.querySelector(".chip.on");
-    if(!on||g.scrollWidth<=g.clientWidth+2)return;
-    const r=on.getBoundingClientRect(),gr=g.getBoundingClientRect();
-    g.scrollLeft+=r.left-gr.left-(gr.width-r.width)/2;
-  });
 }
 $("shufBtn").onclick=()=>{shuffle=!shuffle;set("ats-shuf",shuffle?"1":"0");chips();reset()};
 
