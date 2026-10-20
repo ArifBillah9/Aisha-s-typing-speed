@@ -335,6 +335,65 @@ body.focus #typebox{height:70px;font-size:1.6rem}
   .mtype{grid-column:2;justify-self:start}
   .mexp,.mgot{font-size:1.1rem}
 }
+
+/* ================= MOBILE RESPONSIVE FIXES ================= */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@supports (overflow:clip){body{overflow-x:clip}}
+header{padding-top:env(safe-area-inset-top,0px)}
+.stat>div{min-width:0}
+.row>*{min-width:0;overflow-wrap:anywhere}
+dialog{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain}
+
+/* notch / rounded-corner safe areas (landscape phones) */
+.bar{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+main{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+footer{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+body.focus main{padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+
+@media(max-width:760px){
+  .bar{padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+  main{padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px))}
+  body.focus main{padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
+  /* scrolling chip rows must still reach the real screen edge */
+  .opts .group{margin-left:calc(-1*max(14px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(14px,env(safe-area-inset-right,0px)));padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));scroll-padding:0 14px}
+  /* last row holds focus-mode / shuffle / font buttons: wrap so none are hidden off-screen */
+  .opts .group:last-child{flex-wrap:wrap;overflow:visible;margin-left:0;margin-right:0;padding:0}
+  dialog{width:calc(100vw - 20px)}
+}
+@media(max-width:360px){
+  .fbar .ft{font-size:1.2rem;gap:6px}
+  .fbar .ft i{font-size:1rem}
+  .fbar .fst{gap:7px;font-size:.72rem}
+  body.focus .fbar{gap:6px;padding-left:10px}
+  .tp-side{font-size:.72rem;padding-left:7px}
+}
+
+/* short screens: phones in landscape */
+@media(max-height:520px) and (orientation:landscape){
+  .hero p{display:none}
+  .stats{margin:12px 0 10px}
+  .stat{padding:8px 12px}
+  .board{height:150px;padding:12px 16px}
+  #words{font-size:calc(var(--fs)*.8);line-height:calc(var(--fs)*.8*1.5)}
+  .input-row{display:flex;gap:8px;margin-top:10px}
+  .typewrap{grid-column:auto}
+  #typebox{height:54px;font-size:1.25rem;padding-left:48px;border-radius:12px}
+  .typewrap>i{left:15px;font-size:1.05rem}
+  .primary,.second{min-height:54px;padding:0 16px}
+  .tpop{padding:5px 12px 5px 8px}
+  .tpop .ring{width:36px;height:36px}
+  .tp-main b{font-size:1.25rem}
+  /* focus mode */
+  body.focus main{padding-top:calc(env(safe-area-inset-top,0px) + 6px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 6px);gap:6px}
+  body.focus .fbar{padding:4px 6px 7px 12px}
+  .fbar .ft{font-size:1.15rem}
+  body.focus .board{min-height:74px;padding:8px 14px}
+  body.focus #words{font-size:calc(var(--fs)*.7);line-height:calc(var(--fs)*.7*1.5)}
+  body.focus .input-row{gap:8px}
+  body.focus #typebox{height:44px;font-size:1.1rem;padding-left:42px}
+  body.focus .typewrap>i{left:13px;font-size:.95rem}
+  body.focus .primary,body.focus .second{min-height:44px;padding:0 14px;font-size:.9rem}
+}
 /* reduced motion: stop only the endless/decorative loops, keep the rest gentle */
 @media(prefers-reduced-motion:reduce){
   body::before,body::after,.logo,.primary::after,.progress i,.w.cur,.cover i,.hero h1,.tpop.low,.typewrap:focus-within>i{animation:none!important}
@@ -892,6 +951,13 @@ function chips(){
   DURS.forEach(([s,l])=>mkChip($("durs"),l,s===dur,()=>{dur=s;set("ats-dur",s);chips();reset()}));
   Object.entries(LANGS[lang].sets).forEach(([k,v])=>mkChip($("sets"),v.n,k===setKey,()=>{setKey=k;set("ats-set",k);chips();reset()}));
   $("shufBtn").classList.toggle("on",shuffle);
+  /* মোবাইলে চিপ-সারি স্ক্রল হয়: সক্রিয় চিপটি যেন দেখা যায় */
+  ["langs","durs","sets"].forEach(id=>{
+    const g=$(id),on=g.querySelector(".chip.on");
+    if(!on||g.scrollWidth<=g.clientWidth+2)return;
+    const r=on.getBoundingClientRect(),gr=g.getBoundingClientRect();
+    g.scrollLeft+=r.left-gr.left-(gr.width-r.width)/2;
+  });
 }
 $("shufBtn").onclick=()=>{shuffle=!shuffle;set("ats-shuf",shuffle?"1":"0");chips();reset()};
 
@@ -970,7 +1036,11 @@ function start(){started=true;timer=setInterval(tick,1000);showPop(true);paintPo
 function scrollWords(i){
   const n=$("w"+i);if(!n)return;
   const line=parseFloat(getComputedStyle($("words")).lineHeight);
-  $("words").style.transform="translateY(-"+Math.max(0,n.offsetTop-line)+"px)";
+  /* বোর্ড ছোট হলে (ল্যান্ডস্কেপ/কিবোর্ড খোলা) বর্তমান শব্দ দ্বিতীয় লাইনে নয়, প্রথম লাইনেই রাখা হয় */
+  const b=$("board"),cs=getComputedStyle(b),pt=parseFloat(cs.paddingTop)||0;
+  const room=b.clientHeight-pt-(parseFloat(cs.paddingBottom)||0);
+  const lead=room>=line*2.2?line:pt;
+  $("words").style.transform="translateY(-"+Math.max(0,n.offsetTop-lead)+"px)";
 }
 
 function commit(){
@@ -1101,6 +1171,7 @@ document.addEventListener("fullscreenchange",()=>{if(focusOn&&focusFs&&!document
 function onVV(){if(focusOn){vvFit();scrollWords(idx)}}
 if(window.visualViewport){visualViewport.addEventListener("resize",onVV);visualViewport.addEventListener("scroll",()=>{if(focusOn)vvFit()})}
 addEventListener("resize",onVV);
+addEventListener("orientationchange",()=>setTimeout(()=>{if(focusOn)vvFit();scrollWords(idx)},250));
 
 /* =====================================================================
    ৩) ভুলের বোর্ড — ফলাফলে কোন শব্দে কী ভুল হয়েছে তার তালিকা
