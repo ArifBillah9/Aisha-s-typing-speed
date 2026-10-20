@@ -271,6 +271,70 @@ dialog::backdrop{background:rgba(0,0,0,.55);animation:fadeIn .3s ease}
   .tools{gap:4px}
   .stat b{font-size:1.3rem}
 }
+
+/* ================= FOCUS MODE ================= */
+.fbar{display:none}
+body.focus{overflow:hidden}
+body.focus header,body.focus .hero,body.focus .stats,body.focus .opts,body.focus .progress,body.focus .wc,body.focus .hint,body.focus .result,body.focus section.info,body.focus main>.rv,body.focus footer,body.focus .tpop{display:none!important}
+body.focus main{position:fixed;left:0;right:0;top:var(--vt,0px);height:var(--vh,100dvh);max-width:none;margin:0;padding:calc(env(safe-area-inset-top,0px) + 12px) 18px calc(env(safe-area-inset-bottom,0px) + 12px);display:flex;flex-direction:column;gap:12px;background:var(--bg);z-index:40;overflow:hidden}
+body.focus main>*{width:100%;max-width:1000px;margin-left:auto;margin-right:auto}
+body.focus .fbar{display:flex;align-items:center;gap:12px;flex:none;position:relative;overflow:hidden;padding:8px 8px 10px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.fbar .ft{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.7rem;line-height:1.2;color:var(--accent);font-variant-numeric:tabular-nums}
+.fbar .ft i{font-size:1.2rem}
+.fbar .fst{display:flex;gap:16px;margin-left:auto;color:var(--muted);font-size:.95rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.fbar .fst i{color:var(--accent)}
+.fbar .fst b{color:var(--text);font-weight:600}
+.fbar.low .ft{color:var(--warn)}
+.fprog{position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--line)}
+.fprog i{display:block;height:100%;width:100%;background:var(--accent);transition:width 1s linear}
+.fbar.low .fprog i{background:var(--warn)}
+body.focus .board{flex:1 1 auto;min-height:90px;height:auto}
+body.focus .input-row{flex:none;margin-top:0}
+body.focus #typebox{height:70px;font-size:1.6rem}
+
+/* ================= MISTAKE BOARD ================= */
+.mboard{margin:6px 0 20px;border:1px solid var(--line);border-radius:14px;background:var(--bg2);padding:14px}
+.mhead{display:flex;align-items:center;justify-content:space-between;gap:8px 14px;flex-wrap:wrap;margin-bottom:10px}
+.mhead h3{font-size:1.05rem;display:flex;gap:8px;align-items:center}
+.mhead h3 i{color:var(--warn)}
+.mhead>span{color:var(--muted);font-size:.88rem}
+.mchips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.mchip{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:4px 12px;font-size:.85rem;cursor:pointer;display:inline-flex;gap:6px;align-items:center;transition:border-color .2s,background .2s}
+.mchip:hover{border-color:var(--warn)}
+.mchip.on{background:var(--warn);border-color:var(--warn);color:#fff}
+.mchip b{font-variant-numeric:tabular-nums}
+.mrep{font-size:.85rem;color:var(--muted);margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.mrep em{font-style:normal;background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn);border-radius:8px;padding:1px 9px;font-weight:600}
+.mlist{max-height:340px;overflow-y:auto;display:grid;gap:8px;overscroll-behavior:contain;padding-right:2px}
+.mrow{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:12px;padding:10px 12px}
+.mno{color:var(--muted);font-size:.82rem;font-variant-numeric:tabular-nums}
+.mw{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+.ml small{display:block;color:var(--muted);font-size:.72rem;line-height:1.3}
+.mexp,.mgot{font-size:1.2rem;font-weight:600;word-break:break-word;line-height:1.5}
+.mexp{color:var(--ok)}
+.mgot{color:var(--warn)}
+.mexp .dm{background:color-mix(in srgb,var(--ok) 24%,transparent);border-bottom:2px solid var(--ok);border-radius:3px}
+.mgot .dx{background:color-mix(in srgb,var(--warn) 26%,transparent);border-radius:3px;text-decoration:line-through}
+.mtype{display:inline-flex;gap:6px;align-items:center;white-space:nowrap;font-size:.78rem;padding:3px 10px;border-radius:999px;background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn);font-weight:600}
+.m-empty{display:flex;gap:10px;align-items:center;justify-content:center;padding:14px;color:var(--ok);font-weight:600}
+.m-empty i{font-size:1.3rem}
+.m-none{color:var(--muted);text-align:center;padding:12px}
+
+@media(max-width:760px){
+  body.focus main{padding:calc(env(safe-area-inset-top,0px) + 8px) 10px calc(env(safe-area-inset-bottom,0px) + 8px);gap:8px}
+  body.focus .fbar{padding:6px 6px 9px 12px;border-radius:12px;gap:8px}
+  .fbar .ft{font-size:1.4rem}
+  .fbar .fst{gap:10px;font-size:.8rem}
+  body.focus .board{padding:12px 14px;min-height:76px;border-radius:12px}
+  body.focus .input-row{gap:8px}
+  body.focus #typebox{height:54px;font-size:1.25rem;padding-left:46px}
+  body.focus .typewrap>i{left:15px;font-size:1rem}
+  body.focus .primary,body.focus .second{min-height:44px}
+  .mboard{padding:12px}
+  .mrow{grid-template-columns:30px 1fr;gap:8px 8px}
+  .mtype{grid-column:2;justify-self:start}
+  .mexp,.mgot{font-size:1.1rem}
+}
 /* reduced motion: stop only the endless/decorative loops, keep the rest gentle */
 @media(prefers-reduced-motion:reduce){
   body::before,body::after,.logo,.primary::after,.progress i,.w.cur,.cover i,.hero h1,.tpop.low,.typewrap:focus-within>i{animation:none!important}
@@ -321,6 +385,7 @@ dialog::backdrop{background:rgba(0,0,0,.55);animation:fadeIn .3s ease}
     <div class="group" id="durs"><span><i class="fa-regular fa-clock"></i> সময়:</span></div>
     <div class="group" id="sets"><span><i class="fa-solid fa-book-open"></i> লেখা:</span></div>
     <div class="group">
+      <button class="chip" id="focusBtn" title="বোর্ড, ইনপুট ও টাইমার ফুল স্ক্রিনে দেখান"><i class="fa-solid fa-expand"></i>ফোকাস মোড</button>
       <button class="chip" id="shufBtn"><i class="fa-solid fa-shuffle"></i>এলোমেলো</button>
       <button class="chip" id="fMinus" aria-label="ফন্ট ছোট"><i class="fa-solid fa-minus"></i></button>
       <button class="chip" id="fPlus" aria-label="ফন্ট বড়"><i class="fa-solid fa-plus"></i></button>
@@ -328,6 +393,14 @@ dialog::backdrop{background:rgba(0,0,0,.55);animation:fadeIn .3s ease}
   </div>
   <div class="progress"><i id="bar" style="width:100%"></i></div>
   <div class="wc bn" id="wc"></div>
+
+  <!-- ফোকাস মোডের টাইমার বার (শুধু ফোকাস মোডে দেখা যায়) -->
+  <div class="fbar bn" id="fbar">
+    <div class="ft"><i class="fa-regular fa-clock"></i><span id="fTime">10:00</span></div>
+    <div class="fst"><span><i class="fa-solid fa-gauge-high"></i> <b id="fWpm">0</b> WPM</span><span><i class="fa-solid fa-bullseye"></i> <b id="fAcc">100%</b></span></div>
+    <button class="ibtn" id="fExit" title="ফোকাস মোড বন্ধ" aria-label="ফোকাস মোড বন্ধ"><i class="fa-solid fa-compress"></i></button>
+    <div class="fprog"><i id="fBar"></i></div>
+  </div>
 
   <div class="board idle" id="board"><div class="cover bn"><i class="fa-solid fa-hand-pointer"></i> টাইপ করতে ক্লিক করুন</div><div id="words" class="bn"></div></div>
 
@@ -351,6 +424,7 @@ dialog::backdrop{background:rgba(0,0,0,.55);animation:fadeIn .3s ease}
       <div><b id="rWrong">0</b><small><i class="fa-solid fa-xmark"></i> ভুল শব্দ</small></div>
     </div>
     <div id="chart" aria-label="গতির গ্রাফ"></div>
+    <div class="mboard" id="mboard" aria-live="polite"></div>
     <div class="acts">
       <button class="primary" id="again"><i class="fa-solid fa-rotate-right"></i> আবার চেষ্টা করুন</button>
       <button class="second" id="copyBtn"><i class="fa-regular fa-copy"></i> ফলাফল কপি</button>
@@ -567,7 +641,7 @@ let lang=get("ats-lang")==="en"?"en":"bn";
 const nm=n=>lang==="en"?String(n):String(n).replace(/\d/g,d=>"০১২৩৪৫৬৭৮৯"[d]);   /* সংখ্যা: বাংলা মোডে বাংলা অঙ্ক */
 let dur=+get("ats-dur")||600,setKey=get("ats-set")||"a",shuffle=get("ats-shuf")==="1",sound=get("ats-snd")!=="0",voiceOn=get("ats-voice")!=="0",fs=+get("ats-fs")||1.7;
 if(!LANGS[lang].sets[setKey])setKey="a";
-let left=dur,timer=null,started=false,paused=false,idx=0,okW=0,badW=0,okChars=0,typedChars=0,list=[],samples=[],lastText="",wordErr=false;
+let left=dur,timer=null,started=false,paused=false,idx=0,okW=0,badW=0,okChars=0,typedChars=0,list=[],samples=[],lastText="",wordErr=false,mist=[];
 const PASS_ACC=80; /* সফল হতে কমপক্ষে এই নির্ভুলতা (%) লাগবে */
 const bestKey=()=>lang==="bn"?"ats-best-"+dur:"ats-best-en-"+dur;
 
@@ -774,11 +848,11 @@ if(get("ats-theme"))document.documentElement.dataset.theme=get("ats-theme");
 $("themeBtn").onclick=()=>{const t=document.documentElement.dataset.theme==="light"?"dark":"light";document.documentElement.dataset.theme=t;set("ats-theme",t)};
 function paintSound(){$("soundBtn").innerHTML=`<i class="fa-solid ${sound?"fa-volume-high":"fa-volume-xmark"}"></i>`}
 function paintVoice(){$("voiceBtn").classList.toggle("off",!(voiceOn&&sound))}
-$("soundBtn").onclick=()=>{sound=!sound;set("ats-snd",sound?"1":"0");if(!sound)stopSpeech();paintSound();paintVoice();$("typebox").focus()};
+$("soundBtn").onclick=()=>{sound=!sound;set("ats-snd",sound?"1":"0");if(!sound)stopSpeech();paintSound();paintVoice();$("typebox").focus({preventScroll:true})};
 $("voiceBtn").onclick=()=>{
   if(voiceOn&&sound){voiceOn=false;stopSpeech();toast("শব্দের ভয়েস বন্ধ")}
   else{voiceOn=true;if(!sound){sound=true;set("ats-snd","1");paintSound()}toast("শব্দের ভয়েস চালু");speakWord(list[idx])}
-  set("ats-voice",voiceOn?"1":"0");paintVoice();$("typebox").focus();
+  set("ats-voice",voiceOn?"1":"0");paintVoice();$("typebox").focus({preventScroll:true});
 };
 paintSound();paintVoice();
 const de=document.documentElement;
@@ -845,20 +919,22 @@ function paintPop(){
   $("ringP").style.strokeDashoffset=((1-left/dur)*CIRC).toFixed(2);
   $("tpWpm").textContent=nm(wpm());$("tpAcc").textContent=nm(acc())+"%";
   $("tpop").classList.toggle("low",started&&!paused&&left<=10&&left>0);
+  $("fTime").textContent=fmt(left);$("fWpm").textContent=nm(wpm());$("fAcc").textContent=nm(acc())+"%";
+  $("fbar").classList.toggle("low",started&&!paused&&left<=10&&left>0);
 }
 function showPop(on){
   $("tpop").classList.toggle("show",on);
   $("tpop").setAttribute("aria-hidden",on?"false":"true");
   document.body.classList.toggle("running",on&&!paused);
 }
-function reset(){
-  clearInterval(timer);started=false;paused=false;wordErr=false;idx=0;okW=badW=okChars=typedChars=0;left=dur;samples=[];
+function reset(init){
+  clearInterval(timer);started=false;paused=false;wordErr=false;mist=[];idx=0;okW=badW=okChars=typedChars=0;left=dur;samples=[];
   stopSpeech();
   build();paintWc();preloadWords(0,8);
   $("w0").classList.add("cur");
   $("words").style.transform="translateY(0)";
   $("sTime").textContent=fmt(left);$("sWpm").textContent="0";$("sAcc").textContent="100%";
-  $("bar").style.transition="none";$("bar").style.width="100%";
+  $("bar").style.transition="none";$("bar").style.width="100%";$("fBar").style.transition="none";$("fBar").style.width="100%";
   $("typebox").value="";$("typebox").disabled=false;$("typebox").classList.remove("err");
   $("pauseBtn").innerHTML='<i class="fa-solid fa-pause"></i> বিরতি';
   $("result").classList.remove("show");
@@ -867,7 +943,8 @@ function reset(){
   const rp=$("ringP");rp.style.transition="none";rp.style.strokeDashoffset="0";void rp.getBoundingClientRect();rp.style.transition="";
   $("tpop").classList.remove("paused","low");$("tpLabel").textContent="সময় বাকি";
   showPop(false);paintPop();
-  $("typebox").focus();
+  /* প্রথমবার লোডে ফোকাস/স্ক্রল করা হবে না — মূল ইন্টারফেস উপরেই থাকবে */
+  if(!init)$("typebox").focus({preventScroll:true});
 }
 
 /* ---------- scoring ---------- */
@@ -883,6 +960,7 @@ function tick(){
   samples.push(wpm());
   $("bar").style.transition="width 1s linear";
   $("bar").style.width=(left/dur*100)+"%";
+  $("fBar").style.transition="width 1s linear";$("fBar").style.width=(left/dur*100)+"%";
   paintPop();
   if(left<=10)bump($("tpTime"));
   if(left<=0)finish();
@@ -897,17 +975,17 @@ function scrollWords(i){
 
 function commit(){
   const box=$("typebox"),typed=box.value.trim();
-  if(!typed)return;
+  if(!typed){box.value="";return}
   const target=list[idx],el=$("w"+idx);
   typedChars+=target.length+1;
   el.classList.remove("cur","err");
-  if(typed===target){
+  if(norm(typed)===norm(target)){
     okW++;okChars+=target.length+1;el.classList.add("ok");
     /* শব্দ ঠিক হলে: ভয়েস চালু থাকলে শব্দটি উচ্চারিত হবে, না হলে সাধারণ "correct" সাউন্ড */
     const last=idx+1>=list.length;
     if(!last&&voiceOn&&sound){if(!speakWord(target))playCorrect()}
     else if(!last)playCorrect();
-  }else{badW++;el.classList.add("bad");if(!wordErr)playError()}
+  }else{badW++;mist.push({i:idx,exp:target,got:typed});el.classList.add("bad");if(!wordErr)playError()}
   wordErr=false;
   box.value="";box.classList.remove("err");idx++;
   const next=$("w"+idx);
@@ -950,8 +1028,9 @@ function confetti(){
 function finish(){
   const elapsed=Math.max(1,dur-left);
   clearInterval(timer);left=0;started=false;
+  setFocus(false);
   showPop(false);
-  $("sTime").textContent=fmt(0);$("bar").style.width="0%";$("typebox").disabled=true;
+  $("sTime").textContent=fmt(0);$("bar").style.width="0%";$("fBar").style.width="0%";$("typebox").disabled=true;
   const w=Math.round(okChars/5/(elapsed/60)),a=acc();
   const pass=a>=PASS_ACC&&okW+badW>0;
   $("result").classList.toggle("fail",!pass);
@@ -967,28 +1046,153 @@ function finish(){
   lastText=`Aisha’s typing speed: ${nm(w)} WPM, নির্ভুলতা ${nm(a)}% (${DURS.find(x=>x[0]===dur)[1]})`;
   $("result").classList.add("show");
   countUp($("rWpm"),w);countUp($("rAcc"),a,true);countUp($("rWords"),okW);countUp($("rWrong"),badW);
-  chart();
+  chart();mFilter="all";renderMist();
   playResult(pass);
   if(pass)confetti();
   $("result").scrollIntoView({behavior:"smooth",block:"center"});
 }
 
+/* =====================================================================
+   ১) শব্দ মেলানোর নিয়ম — বাংলা ইউনিকোডের একই বর্ণের ভিন্ন কোড (য়, ড়, ঢ়, ো, ৌ, ৎ,
+      অদৃশ্য ZWJ/ZWNJ) যেন সঠিক শব্দকে ভুল না ধরে।
+   ===================================================================== */
+const ZW=/[\u200B-\u200D\u2060\uFEFF]/g;
+function norm(s){
+  return String(s==null?"":s).normalize("NFD").replace(ZW,"")
+    .replace(/\u09CE/g,"\u09A4\u09CD")
+    .replace(/\|/g,"।")
+    .replace(/[‘’`´]/g,"'").replace(/[“”]/g,'"')
+    .replace(/\u00A0/g," ");
+}
+
+/* =====================================================================
+   ২) ফোকাস মোড — বোর্ড + ইনপুট + টাইমার ফুল স্ক্রিনে (মোবাইলেও)
+   ===================================================================== */
+let focusOn=false,focusFs=false,focusY=0;
+function vvFit(){
+  const v=window.visualViewport;
+  de.style.setProperty("--vh",(v?v.height:innerHeight)+"px");
+  de.style.setProperty("--vt",(v?v.offsetTop:0)+"px");
+}
+function setFocus(on){
+  if(on===focusOn)return;
+  focusOn=on;
+  if(on){
+    focusY=window.scrollY;
+    document.body.classList.add("focus");vvFit();
+    if(de.requestFullscreen&&!document.fullscreenElement){focusFs=true;try{de.requestFullscreen().catch(()=>{focusFs=false})}catch(e){focusFs=false}}
+    window.scrollTo(0,0);
+    $("typebox").focus({preventScroll:true});
+  }else{
+    document.body.classList.remove("focus");
+    if(focusFs&&document.fullscreenElement){try{document.exitFullscreen().catch(()=>{})}catch(e){}}
+    focusFs=false;
+    de.style.removeProperty("--vh");de.style.removeProperty("--vt");
+    window.scrollTo(0,focusY);
+  }
+  $("focusBtn").classList.toggle("on",on);
+  $("focusBtn").innerHTML=on?'<i class="fa-solid fa-compress"></i>ফোকাস মোড বন্ধ':'<i class="fa-solid fa-expand"></i>ফোকাস মোড';
+  paintPop();
+  requestAnimationFrame(()=>scrollWords(idx));
+}
+$("focusBtn").onclick=()=>setFocus(!focusOn);
+$("fExit").onclick=()=>setFocus(false);
+document.addEventListener("fullscreenchange",()=>{if(focusOn&&focusFs&&!document.fullscreenElement)setFocus(false)});
+function onVV(){if(focusOn){vvFit();scrollWords(idx)}}
+if(window.visualViewport){visualViewport.addEventListener("resize",onVV);visualViewport.addEventListener("scroll",()=>{if(focusOn)vvFit()})}
+addEventListener("resize",onVV);
+
+/* =====================================================================
+   ৩) ভুলের বোর্ড — ফলাফলে কোন শব্দে কী ভুল হয়েছে তার তালিকা
+   ===================================================================== */
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const CL=s=>String(s).normalize("NFC").replace(ZW,"").match(/\P{M}(?:\u09CD\P{M})*\p{M}*/gu)||[];  /* বর্ণগুচ্ছ (যুক্তাক্ষর/কার সহ) */
+const ck=c=>norm(c);
+const PUN=/[।,.!?;:"'‘’“”()\-]/g;
+const MT={
+  pun:["যতিচিহ্ন ভুল","fa-ellipsis"],
+  miss:["বর্ণ বাদ পড়েছে","fa-eraser"],
+  extra:["বাড়তি বর্ণ","fa-plus"],
+  swap:["বর্ণের ক্রম উল্টে গেছে","fa-right-left"],
+  case:["বড়/ছোট হাতের অক্ষর","fa-font"],
+  wrong:["ভুল বর্ণ","fa-circle-xmark"]
+};
+let mFilter="all";
+function diffW(a,b){
+  const A=a.map(ck),B=b.map(ck),n=A.length,m=B.length;
+  const d=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)d[i][j]=A[i]===B[j]?d[i+1][j+1]+1:Math.max(d[i+1][j],d[i][j+1]);
+  const ea=new Array(n).fill(false),eb=new Array(m).fill(false);
+  let i=0,j=0;
+  while(i<n&&j<m){
+    if(A[i]===B[j]){ea[i]=eb[j]=true;i++;j++}
+    else if(d[i+1][j]>=d[i][j+1])i++;
+    else j++;
+  }
+  return{ea,eb,lcs:d[0][0]};
+}
+function classify(exp,got){
+  const ne=norm(exp),ng=norm(got);
+  if(ne!==ng&&ne.replace(PUN,"")===ng.replace(PUN,""))return"pun";
+  if(lang==="en"&&ne.toLowerCase()===ng.toLowerCase())return"case";
+  const a=CL(exp),b=CL(got),{lcs}=diffW(a,b);
+  if(lcs===b.length&&b.length<a.length)return"miss";
+  if(lcs===a.length&&a.length<b.length)return"extra";
+  if(a.length===b.length){
+    for(let i=0;i<a.length-1;i++){
+      if(ck(a[i])===ck(b[i+1])&&ck(a[i+1])===ck(b[i])){
+        const r1=a.slice(0,i).concat(a.slice(i+2)).map(ck).join("|"),r2=b.slice(0,i).concat(b.slice(i+2)).map(ck).join("|");
+        if(r1===r2)return"swap";
+      }
+    }
+  }
+  return"wrong";
+}
+function diffHtml(m){
+  const a=CL(m.exp),b=CL(m.got),{ea,eb}=diffW(a,b);
+  return{
+    exp:a.map((c,i)=>`<span class="${ea[i]?"":"dm"}">${esc(c)}</span>`).join(""),
+    got:b.map((c,i)=>`<span class="${eb[i]?"":"dx"}">${esc(c)}</span>`).join("")
+  };
+}
+function renderMist(){
+  const box=$("mboard");
+  if(!mist.length){
+    box.innerHTML=`<div class="mhead"><h3><i class="fa-solid fa-list-check"></i> ভুলের বোর্ড</h3></div><div class="m-empty"><i class="fa-solid fa-face-smile-beam"></i> একটিও ভুল নেই — দারুণ নির্ভুল টাইপিং!</div>`;
+    return;
+  }
+  mist.forEach(m=>{if(!m.t)m.t=classify(m.exp,m.got)});
+  const cnt={};mist.forEach(m=>cnt[m.t]=(cnt[m.t]||0)+1);
+  const rep={};mist.forEach(m=>rep[m.exp]=(rep[m.exp]||0)+1);
+  const reps=Object.entries(rep).filter(([,c])=>c>1).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const rows=mist.filter(m=>mFilter==="all"||m.t===mFilter);
+  const chipsH=`<button class="mchip${mFilter==="all"?" on":""}" data-f="all">সব <b>${nm(mist.length)}</b></button>`+
+    Object.keys(MT).filter(t=>cnt[t]).map(t=>`<button class="mchip${mFilter===t?" on":""}" data-f="${t}"><i class="fa-solid ${MT[t][1]}"></i>${MT[t][0]} <b>${nm(cnt[t])}</b></button>`).join("");
+  const repH=reps.length?`<div class="mrep"><i class="fa-solid fa-rotate"></i> বারবার ভুল হয়েছে: ${reps.map(([w,c])=>`<em>${esc(w)} ×${nm(c)}</em>`).join(" ")}</div>`:"";
+  const listH=rows.length?rows.map(m=>{
+    const d=diffHtml(m),t=MT[m.t];
+    return`<div class="mrow"><span class="mno">#${nm(m.i+1)}</span><div class="mw"><div class="ml"><small>সঠিক শব্দ</small><div class="mexp">${d.exp}</div></div><div class="ml"><small>আপনি লিখেছেন</small><div class="mgot">${d.got}</div></div></div><span class="mtype"><i class="fa-solid ${t[1]}"></i>${t[0]}</span></div>`;
+  }).join(""):`<div class="m-none">এই ধরনের কোনো ভুল নেই।</div>`;
+  box.innerHTML=`<div class="mhead"><h3><i class="fa-solid fa-list-check"></i> ভুলের বোর্ড</h3><span>মোট ${nm(mist.length)}টি ভুল শব্দ</span></div><div class="mchips">${chipsH}</div>${repH}<div class="mlist">${listH}</div>`;
+}
+$("mboard").addEventListener("click",e=>{const b=e.target.closest(".mchip");if(b){mFilter=b.dataset.f;renderMist()}});
+
 /* ---------- input ---------- */
 $("typebox").addEventListener("input",e=>{
   const v=e.target.value;
   if(paused)return;
-  if(!started&&v.length&&left>0)start();
+  if(!started&&v.trim().length&&left>0)start();
   if(/\s$/.test(v)){commit();return}
-  const cur=$("w"+idx),ok=list[idx].startsWith(v.trim());
+  const cur=$("w"+idx),ok=norm(list[idx]).startsWith(norm(v.trim()));
   cur.classList.toggle("err",!ok);e.target.classList.toggle("err",!ok);
   if(!ok&&!wordErr){wordErr=true;playError()}
   else if(ok){wordErr=false;beep(420,.03,.02)}
-  if(idx===list.length-1&&v.trim()===list[idx])commit(); /* শেষ শব্দে Space লাগবে না */
+  if(idx===list.length-1&&norm(v.trim())===norm(list[idx]))commit(); /* শেষ শব্দে Space লাগবে না */
 });
 $("typebox").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();commit()}});
 $("typebox").addEventListener("focus",()=>$("board").classList.remove("idle"));
 $("typebox").addEventListener("blur",()=>$("board").classList.add("idle"));
-$("board").onclick=()=>{if(!$("typebox").disabled)$("typebox").focus()};
+$("board").onclick=()=>{if(!$("typebox").disabled)$("typebox").focus({preventScroll:true})};
 
 function togglePause(){
   if(!started&&!paused)return;
@@ -1000,14 +1204,14 @@ function togglePause(){
   document.body.classList.toggle("running",!paused);
   if(paused)stopSpeech();
   paintPop();
-  if(!paused)$("typebox").focus();
+  if(!paused)$("typebox").focus({preventScroll:true});
 }
 $("pauseBtn").onclick=togglePause;
-$("restart").onclick=reset;
+$("restart").onclick=()=>reset();
 $("again").onclick=()=>{reset();window.scrollTo({top:0,behavior:"smooth"})};
 document.addEventListener("keydown",e=>{
   if(e.key==="Tab"&&e.target===$("typebox")){e.preventDefault();$("restart").focus()}
-  if(e.key==="Escape"&&!$("hist").open)reset();
+  if(e.key==="Escape"&&!$("hist").open){if(focusOn)setFocus(false);else reset()}
 });
 
 /* ---------- result copy & history ---------- */
@@ -1045,7 +1249,9 @@ document.addEventListener("pointerdown",e=>{
   els.forEach(e=>io.observe(e));
 })();
 
-applyLang();chips();reset();
+try{history.scrollRestoration="manual"}catch(e){}
+applyLang();chips();reset(true);
+window.scrollTo(0,0);
 </script>
 </body>
 </html>
