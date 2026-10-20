@@ -2,7 +2,8 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
 <title>Aisha’s typing speed</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +25,7 @@
 body{
   font-family:'League Spartan','Kalpurush','Hind Siliguri','Noto Sans Bengali',sans-serif;
   background:radial-gradient(900px 500px at 15% -10%,rgba(45,212,167,.10),transparent 60%),var(--bg);
-  color:var(--text);min-height:100vh;line-height:1.6;
+  color:var(--text);min-height:100vh;min-height:100dvh;line-height:1.6;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;
 }
 /* English font (forced) */
 body,button,input,select,dialog{font-family:'League Spartan','Kalpurush','Hind Siliguri','Noto Sans Bengali',sans-serif !important}
@@ -71,11 +72,13 @@ body.running header{transform:translateY(-110%)}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.25rem}
 .logo{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;animation:floaty 3.6s ease-in-out infinite}
 .tools{display:flex;gap:8px}
-.ibtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;transition:border-color .2s,transform .15s,color .2s}
+.ibtn{display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;transition:border-color .2s,transform .15s,color .2s}
 .ibtn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px) rotate(-6deg)}
 .ibtn:active{transform:scale(.92)}
+.ibtn svg{display:block;pointer-events:none}
 .ibtn.off{opacity:.55}
 .ibtn.off::before{content:"";position:absolute;left:50%;top:50%;width:22px;height:2px;background:var(--warn);transform:translate(-50%,-50%) rotate(-45deg)}
+button{touch-action:manipulation}
 button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 main{max-width:1080px;margin:auto;padding:28px 20px 60px}
@@ -138,7 +141,7 @@ main{max-width:1080px;margin:auto;padding:28px 20px 60px}
 kbd{border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:.8rem;background:var(--bg2)}
 
 /* ---- floating timer popup (shown while the test is running) ---- */
-.tpop{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:50%;z-index:30;display:flex;align-items:center;gap:14px;padding:9px 20px 9px 11px;border-radius:999px;background:color-mix(in srgb,var(--card) 90%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1.5px solid var(--accent);box-shadow:0 12px 40px rgba(0,0,0,.35),0 0 0 6px color-mix(in srgb,var(--accent) 12%,transparent);transform:translate(-50%,-40px) scale(.8);opacity:0;pointer-events:none;transition:transform .5s cubic-bezier(.2,1.3,.4,1),opacity .3s,top .4s ease,border-color .3s}
+.tpop{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:50%;z-index:30;display:flex;align-items:center;gap:14px;padding:9px 20px 9px 11px;border-radius:4px;width:max-content;max-width:calc(100vw - 16px);background:color-mix(in srgb,var(--card) 90%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1.5px solid var(--accent);box-shadow:0 12px 40px rgba(0,0,0,.35),0 0 0 6px color-mix(in srgb,var(--accent) 12%,transparent);transform:translate(-50%,-40px) scale(.8);opacity:0;pointer-events:none;transition:transform .5s cubic-bezier(.2,1.3,.4,1),opacity .3s,top .4s ease,border-color .3s}
 .tpop.show{transform:translate(-50%,0) scale(1);opacity:1}
 body:not(.running) .tpop.show{top:calc(env(safe-area-inset-top,0px) + 72px)}
 .tpop .ring{width:54px;height:54px;transform:rotate(-90deg);flex:none}
@@ -204,37 +207,69 @@ dialog::backdrop{background:rgba(0,0,0,.55);animation:fadeIn .3s ease}
 .row{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.93rem;animation:fadeUp .4s backwards}
 .row.head{color:var(--muted);font-size:.82rem}
 .empty{color:var(--muted);padding:18px 0;text-align:center}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--accent);color:var(--accent-ink);padding:10px 20px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.2,1.3,.4,1);z-index:50;max-width:92vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%) translateY(20px);background:var(--accent);color:var(--accent-ink);padding:10px 20px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.2,1.3,.4,1);z-index:50;max-width:92vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%)}
 
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
 .confetti i{position:absolute;top:-24px;border-radius:2px;animation:fall linear forwards}
 
 @media(max-width:760px){
-  .stats{grid-template-columns:repeat(2,1fr)}
+  main{padding:18px 14px calc(env(safe-area-inset-bottom,0px) + 44px)}
+  .hero h1{font-size:1.55rem}
+  .hero p{font-size:.93rem}
+  .stats{grid-template-columns:repeat(2,1fr);gap:10px;margin:18px 0 12px}
+  .stat{padding:12px;gap:10px;border-radius:14px}
+  .stat>i{font-size:1.1rem;width:22px}
+  .stat small{font-size:.78rem}
+  .stat b{font-size:1.45rem}
   section.info{grid-template-columns:1fr}
-  .board{height:200px;padding:18px}
-  .input-row{flex-direction:column}
-  #typebox{height:68px;font-size:1.5rem}
+  .opts{flex-direction:column;align-items:stretch;gap:10px;margin-bottom:12px}
+  .opts .group{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:2px 1px 4px;margin:0 -14px;padding-left:14px;padding-right:14px}
+  .opts .group::-webkit-scrollbar{display:none}
+  .opts .group>span,.opts .chip{flex:none;white-space:nowrap}
+  .chip{padding:7px 15px}
+  .board{height:190px;padding:16px 16px;border-radius:14px}
+  #words{font-size:calc(var(--fs)*.9);line-height:calc(var(--fs)*.9*1.5)}
+  .input-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .typewrap{grid-column:1/-1}
+  .typewrap>i{left:18px;font-size:1.15rem}
+  #typebox{height:64px;font-size:1.4rem;padding:0 16px 0 52px;border-radius:14px}
+  #typebox::placeholder{font-size:1rem}
+  .primary,.second{min-height:50px;padding:0 12px;border-radius:12px}
+  .hint{font-size:.8rem;line-height:1.5}
   .bar{padding:10px 12px;gap:8px;flex-wrap:nowrap}
   .brand{font-size:.98rem;gap:8px;min-width:0}
   .brand span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .logo{width:32px;height:32px;flex:none}
   .tools{gap:6px;flex:none}
   .ibtn{width:36px;height:36px}
-  .tpop{gap:10px;padding:7px 14px 7px 8px}
+  .tpop{gap:10px;padding:7px 12px 7px 8px}
   .tpop .ring{width:42px;height:42px}
-  .tp-main{min-width:62px}
+  .tp-main{min-width:58px}
   .tp-main b{font-size:1.45rem}
+  .tp-side{font-size:.82rem;padding-left:10px}
   body:not(.running) .tpop.show{top:calc(env(safe-area-inset-top,0px) + 64px)}
+  .result{padding:18px;border-radius:14px}
+  .result h2{font-size:1.25rem}
+  .big{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px}
+  .big b{font-size:2rem}
+  .acts .primary,.acts .second{flex:1 1 100%}
+  .tile{padding:16px}
+  details{padding:12px 14px}
+  .row{grid-template-columns:1.3fr 1fr .8fr 1fr;font-size:.82rem;gap:4px}
+  dialog{padding:16px}
 }
 @media(max-width:420px){
-  .tp-side{font-size:.78rem;padding-left:10px}
+  .tp-side{font-size:.76rem;padding-left:8px}
+  .tpop .ring{width:38px;height:38px}
+  .tp-main b{font-size:1.3rem}
 }
 @media(max-width:380px){
-  .brand{font-size:.9rem}
+  .brand{font-size:.84rem;line-height:1.15}
+  .brand span{white-space:normal}
   .ibtn{width:32px;height:32px}
   .tools{gap:4px}
+  .stat b{font-size:1.3rem}
 }
 /* reduced motion: stop only the endless/decorative loops, keep the rest gentle */
 @media(prefers-reduced-motion:reduce){
@@ -249,7 +284,7 @@ dialog::backdrop{background:rgba(0,0,0,.55);animation:fadeIn .3s ease}
     <div class="brand"><div class="logo"><i class="fa-solid fa-keyboard"></i></div><span>Aisha’s typing speed</span></div>
     <div class="tools">
       <button class="ibtn" id="histBtn" title="ফলাফলের ইতিহাস" aria-label="ফলাফলের ইতিহাস"><i class="fa-solid fa-clock-rotate-left"></i></button>
-      <button class="ibtn" id="voiceBtn" title="শব্দের ভয়েস" aria-label="শব্দের ভয়েস চালু/বন্ধ"><i class="fa-solid fa-person-speaking"></i></button>
+      <button class="ibtn" id="voiceBtn" title="শব্দের ভয়েস" aria-label="শব্দের ভয়েস চালু/বন্ধ"><svg class="vico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-8 8H4l2.2-3A8 8 0 1 1 21 12z"/><path d="M9 10v4M12 8v8M15 10v4"/></svg></button>
       <button class="ibtn" id="soundBtn" title="সাউন্ড" aria-label="সাউন্ড"><i class="fa-solid fa-volume-high"></i></button>
       <button class="ibtn" id="fsBtn" title="ফুলস্ক্রিন" aria-label="ফুলস্ক্রিন"><i class="fa-solid fa-expand"></i></button>
       <button class="ibtn" id="themeBtn" title="থিম" aria-label="থিম পরিবর্তন"><i class="fa-solid fa-circle-half-stroke"></i></button>
@@ -579,10 +614,14 @@ function unlock(){
       const p=a.play();if(p&&p.then)p.then(done).catch(()=>{a.muted=false;htmlPrimed=false});else done();
     });
   }
+  if(!silentOn){silentOn=true;try{silentEl.play().catch(()=>{silentOn=false})}catch(e){silentOn=false}}
+  if(!wPrimed){wPrimed=true;try{wEl.muted=true;wEl.src=SILENT;const p=wEl.play();const fin=()=>{try{wEl.pause()}catch(e){}wEl.muted=false};if(p&&p.then)p.then(fin).catch(()=>{wEl.muted=false;wPrimed=false});else fin()}catch(e){wPrimed=false}}
   primeSpeech();
 }
 ["pointerdown","touchend","click","keydown"].forEach(ev=>document.addEventListener(ev,unlock,{passive:true,capture:true}));
-document.addEventListener("visibilitychange",()=>{if(!document.hidden&&actx&&actx.state!=="running")actx.resume().catch(()=>{})});
+const wake=()=>{if(actx&&actx.state!=="running")actx.resume().catch(()=>{})};
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)wake()});
+window.addEventListener("pageshow",wake);window.addEventListener("focus",wake);
 loadBufs();
 
 function stopSnd(k){const s=playing[k];if(!s)return;try{if(s.stop)s.stop();else{s.pause();s.currentTime=0}}catch(e){}playing[k]=null}
@@ -624,11 +663,73 @@ function beep(f,d,v){
 }
 
 /* =====================================================================
+   রেকর্ড করা শব্দের ভয়েস (voice/ ফোল্ডার) — সব ডিভাইসে একই ভয়েস
+   - প্রতিটি শব্দের আলাদা mp3 (voice/bn/…, voice/en/…) → ফোনে বাংলা TTS না থাকলেও চলে
+   - পরের কয়েকটি শব্দ আগে থেকেই লোড/ডিকোড হয়ে থাকে → দেরি হয় না
+   - Web Audio না চললে (যেমন ফাইল সরাসরি খুললে) নিজে থেকে <audio> এলিমেন্টে বদলে যায়
+   - কোনো শব্দের রেকর্ডিং না পেলে ডিভাইসের TTS ব্যবহার হয়
+   ===================================================================== */
+const VOICE={"bn":{"অনেকক্ষণ":"000","অফিস":"001","আঁচড়ে":"002","আজ":"003","আদর":"004","আনন্দ":"005","আফনান":"006","আফনানকে":"007","আফনানের":"008","আবার":"009","আমার":"010","আয়শা":"011","আয়শার":"012","আর":"013","আরাম":"014","আরামে":"015","আরিফ":"016","আলতো":"017","আলো":"018","আসেন":"019","আস্তে":"020","উঁকি":"021","উঠল":"022","উঠলে":"023","উদ্দিন":"024","উদ্দিনের":"025","এই":"026","একটি":"027","এখন":"028","এল":"029","এলে":"030","এসে":"031","এসেও":"032","ওই":"033","ওঠে":"034","ওঠেন":"035","ওরে":"036","কখনো":"037","কপালে":"038","কমিয়ে":"039","করতে":"040","করিয়ে":"041","করে":"042","করেন":"043","কাঁধে":"044","কাছে":"045","কাজল":"046","কাপড়":"047","কাপড়গুলো":"048","কিছুক্ষণ":"049","কী":"050","কুলসুম":"051","কুসুম":"052","কেঁদে":"053","কোলে":"054","কোলেই":"055","কোলেও":"056","ক্ষুধা":"057","খাওয়ায়":"058","খায়":"059","খালা":"060","খুব":"061","খুশি":"062","খেয়ে":"063","খেলা":"064","গন্ধে":"065","গরম":"066","গাছপালা":"067","গান":"068","গায়":"069","গায়ে":"070","গালে":"071","গুছিয়ে":"072","গুনগুন":"073","গেছে":"074","গেল":"075","গোসল":"076","গোসলের":"077","ঘর":"078","ঘরের":"079","ঘুম":"080","ঘুমাও":"081","ঘুমালেও":"082","ঘুমিয়ে":"083","চমকে":"084","চাচ্চু":"085","চাচ্চুর":"086","চাদরে":"087","চাপড়ে":"088","চুপ":"089","চুমু":"090","চুল":"091","চেপে":"092","চেয়ে":"093","চোখ":"094","চোখে":"095","ছড়িয়ে":"096","ছোট্ট":"097","ছোড়ে":"098","জড়িয়ে":"099","জামা":"100","জেগে":"101","ঠান্ডা":"102","ডক্টর":"103","ডাক্তারের":"104","ডেকে":"105","তখন":"106","তাকায়":"107","তাকিয়ে":"108","তাকে":"109","তাড়াতাড়ি":"110","তার":"111","তিন":"112","তিনি":"113","তেল":"114","তোয়ালে":"115","থাকে":"116","থেকে":"117","দিকে":"118","দিন":"119","দিয়ে":"120","দিল":"121","দিলরুবা":"122","দুধ":"123","দুষ্টুমি":"124","দেওয়া":"125","দেখতে":"126","দেখে":"127","দেখো":"128","দেন":"129","দেয়":"130","দৌড়":"131","ধন্যবাদ":"132","ধরে":"133","ধুতে":"134","ধুয়ে":"135","নতুন":"136","নরম":"137","না":"138","নাক":"139","নামলে":"140","নিচটা":"141","নিয়ে":"142","নিল":"143","নেড়ে":"144","নেন":"145","নেয়":"146","ন্যাপি":"147","পটি":"148","পটিও":"149","পড়ে":"150","পর":"151","পরাতেই":"152","পরিয়ে":"153","পরিষ্কার":"154","পরে":"155","পা":"156","পাখি":"157","পাড়াচ্ছে":"158","পানি":"159","পানিতে":"160","পাশের":"161","পিঠ":"162","পেলে":"163","প্রস্রাব":"164","ফিরে":"165","ফুটফুটে":"166","বইছে":"167","বড়":"168","বন্ধ":"169","বলে":"170","বলেন":"171","বসেন":"172","বাইরে":"173","বাড়ি":"174","বাড়িতে":"175","বাড়ির":"176","বাতাস":"177","বাবা":"178","বারবার":"179","বারান্দায়":"180","বিকেলে":"181","বিছানায়":"182","বিল্লাহ":"183","বিল্লাহর":"184","বুকে":"185","বৃষ্টির":"186","বেগম":"187","বেগমও":"188","বেগমের":"189","বোরহান":"190","ব্যাগ":"191","ব্যাগে":"192","ভরে":"193","ভিজে":"194","ভেতর":"195","ভোর":"196","ময়লা":"197","মাথা":"198","মানিক":"199","মালিশ":"200","মাস":"201","মিলে":"202","মিষ্টি":"203","মুখে":"204","মুখের":"205","মুছে":"206","মেলে":"207","যত্ন":"208","যাওয়ার":"209","যায়":"210","রাত":"211","রাতে":"212","রান্না":"213","রান্নাঘর":"214","রেখে":"215","শব্দ":"216","শুইয়ে":"217","শুভ":"218","শুয়ে":"219","সকাল":"220","সকালে":"221","সবচেয়ে":"222","সবাই":"223","সবার":"224","সরিষার":"225","সাবান":"226","সারা":"227","সুন্দর":"228","সুযোগে":"229","সে":"230","সেই":"231","সোনা":"232","হচ্ছে":"233","হঠাৎ":"234","হয়":"235","হয়ে":"236","হলে":"237","হা":"238","হাঁটে":"239","হাত":"240","হাসাহাসি":"241","হাসি":"242","হাসিই":"243","হাসির":"244","হাসে":"245","হিসু":"246","হেসে":"247"},"en":{"a":"000","after":"001","afternoon":"002","again":"003","also":"004","and":"005","are":"006","arms":"007","around":"008","as":"009","asleep":"010","at":"011","aunty":"012","away":"013","baby":"014","babys":"015","back":"016","bag":"017","bath":"018","bed":"019","before":"020","bird":"021","blanket":"022","blowing":"023","body":"024","breeze":"025","brings":"026","bursts":"027","care":"028","carries":"029","chachu":"030","chachus":"031","cheek":"032","chest":"033","clean":"034","cleans":"035","close":"036","closes":"037","cloth":"038","clothes":"039","combs":"040","comes":"041","comfort":"042","cook":"043","cool":"044","cozy":"045","cry":"046","dad":"047","dada":"048","dadas":"049","dadi":"050","dadis":"051","dads":"052","darling":"053","dawn":"054","day":"055","diaper":"056","diapers":"057","dirty":"058","doctor":"059","dot":"060","down":"061","dries":"062","even":"063","everyone":"064","eyes":"065","face":"066","falls":"067","feeds":"068","feels":"069","fills":"070","for":"071","forehead":"072","from":"073","gentle":"074","gently":"075","giggle":"076","gives":"077","go":"078","goes":"079","good":"080","great":"081","greatest":"082","hair":"083","hand":"084","happy":"085","has":"086","he":"087","head":"088","her":"089","him":"090","his":"091","holds":"092","home":"093","house":"094","hums":"095","hungry":"096","in":"097","is":"098","joy":"099","kicks":"100","kiss":"101","kisses":"102","kitchen":"103","kohl":"104","lap":"105","later":"106","laugh":"107","laughing":"108","laughs":"109","lays":"110","legs":"111","lies":"112","lights":"113","little":"114","long":"115","look":"116","looks":"117","love":"118","lovely":"119","low":"120","makes":"121","many":"122","mild":"123","milk":"124","mom":"125","moms":"126","months":"127","more":"128","morning":"129","my":"130","nanu":"131","neighbor":"132","new":"133","night":"134","no":"135","nose":"136","now":"137","of":"138","oh":"139","oil":"140","old":"141","on":"142","once":"143","opens":"144","out":"145","outside":"146","packs":"147","pats":"148","peeks":"149","pees":"150","picks":"151","plays":"152","poops":"153","porch":"154","puts":"155","quickly":"156","quietly":"157","rain":"158","rests":"159","rocking":"160","room":"161","rubs":"162","runs":"163","says":"164","see":"165","she":"166","shoulder":"167","sings":"168","sits":"169","sleep":"170","smell":"171","smile":"172","smiles":"173","so":"174","soap":"175","soft":"176","sometimes":"177","song":"178","soon":"179","sound":"180","starts":"181","still":"182","suddenly":"183","surprise":"184","sweet":"185","sweetly":"186","takes":"187","thank":"188","that":"189","the":"190","this":"191","three":"192","time":"193","times":"194","tiny":"195","to":"196","today":"197","together":"198","too":"199","towel":"200","treasure":"201","trees":"202","tricks":"203","turned":"204","up":"205","uses":"206","wakes":"207","walks":"208","warm":"209","wash":"210","washes":"211","water":"212","waves":"213","wears":"214","well":"215","wet":"216","what":"217","when":"218","while":"219","whole":"220","wide":"221","wipes":"222","with":"223","without":"224","work":"225","wraps":"226","you":"227"}};
+const SILENT="data:audio/wav;base64,UklGRsQPAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YaAPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+const silentEl=new Audio(SILENT);silentEl.loop=true;silentEl.preload="auto";silentEl.setAttribute("playsinline","");
+const wEl=new Audio();wEl.preload="auto";wEl.setAttribute("playsinline","");
+let silentOn=false,wPrimed=false,wFail=false,wTok=0,wSrc=null;
+const wBuf={};
+const wClean=w=>{const c=(w||"").replace(/[।,.!?;:"'‘’“”()\-]/g,"").trim();return lang==="en"?c.toLowerCase():c};
+function wordUrl(w){const id=(VOICE[lang]||{})[wClean(w)];return id?"voice/"+lang+"/"+id+".mp3":null}
+function getWBuf(url){
+  if(wBuf[url])return wBuf[url];
+  const c=getCtx();
+  if(!c||typeof fetch!=="function")return Promise.reject(new Error("no-webaudio"));
+  const p=fetch(url).then(r=>{if(!r.ok)throw new Error(url);return r.arrayBuffer()})
+    .then(ab=>new Promise((res,rej)=>{const q=c.decodeAudioData(ab,res,rej);if(q&&q.catch)q.catch(rej)}));
+  wBuf[url]=p;p.catch(()=>{delete wBuf[url]});
+  return p;
+}
+function preloadWords(from,n){
+  if(wFail||!actx)return;
+  for(let i=from;i<Math.min(list.length,from+n);i++){const u=wordUrl(list[i]);if(u)getWBuf(u).catch(()=>{})}
+}
+function stopWordAudio(){
+  wTok++;
+  if(wSrc){try{wSrc.onended=null;wSrc.stop()}catch(e){}wSrc=null}
+  try{wEl.pause()}catch(e){}
+}
+function talkOn(on){const t=$("talk");if(t)t.classList.toggle("on",on)}
+function playWordUrl(url){
+  stopWordAudio();const tok=wTok;
+  const viaHtml=()=>{
+    if(tok!==wTok)return;
+    try{
+      wEl.onplaying=()=>talkOn(true);wEl.onended=wEl.onerror=()=>talkOn(false);
+      wEl.muted=false;wEl.src=url;wEl.currentTime=0;
+      const p=wEl.play();if(p&&p.catch)p.catch(()=>talkOn(false));
+    }catch(e){}
+  };
+  const c=getCtx();
+  if(c&&!wFail){
+    getWBuf(url).then(b=>{
+      if(tok!==wTok)return;
+      const go=()=>{
+        if(tok!==wTok)return;
+        try{
+          const s=c.createBufferSource();s.buffer=b;s.connect(c.destination);
+          s.onended=()=>{if(wSrc===s){wSrc=null;talkOn(false)}};
+          wSrc=s;s.start(0);talkOn(true);
+        }catch(e){viaHtml()}
+      };
+      if(c.state==="running")go();
+      else c.resume().then(()=>{if(c.state==="running")go();else viaHtml()}).catch(viaHtml);
+    }).catch(()=>{wFail=true;viaHtml()});
+  }else viaHtml();
+}
+
+/* =====================================================================
    শব্দের ভয়েস (Text-to-Speech) — যে শব্দ লেখা হয় সেটি নিজে থেকে উচ্চারিত হয়
    ডিভাইসের বিল্ট-ইন কণ্ঠস্বর ব্যবহার হয় (বাংলা: bn-BD / bn-IN, ইংরেজি: en-US)
    ===================================================================== */
 const SS=("speechSynthesis" in window)?window.speechSynthesis:null;
-let voices=[],voiceWarned=false,speechPrimed=false;
+let voices=[],voiceWarned=false,speechPrimed=false,curU=null;
 function loadVoices(){if(SS){try{voices=SS.getVoices()||[]}catch(e){}}}
 if(SS){loadVoices();if(SS.addEventListener)SS.addEventListener("voiceschanged",loadVoices);else SS.onvoiceschanged=loadVoices}
 const normL=l=>(l||"").toLowerCase().replace("_","-");
@@ -641,8 +742,14 @@ function primeSpeech(){
   if(!SS||speechPrimed)return;speechPrimed=true;
   try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;SS.speak(u)}catch(e){}
 }
-function stopSpeech(){if(SS){try{SS.cancel()}catch(e){}}$("talk").classList.remove("on")}
+function stopSpeech(){curU=null;stopWordAudio();if(SS){try{SS.cancel()}catch(e){}}$("talk").classList.remove("on")}
 function speakWord(w){
+  if(!sound||!voiceOn||!w)return false;
+  const url=wordUrl(w);
+  if(url){try{if(SS)SS.cancel()}catch(e){}playWordUrl(url);return true}
+  return speakTTS(w);
+}
+function speakTTS(w){
   if(!SS||!sound||!voiceOn||!w)return false;
   const clean=w.replace(/[।,.!?;:"'‘’“”()\-]/g,"").trim();
   if(!clean)return false;
@@ -652,11 +759,12 @@ function speakWord(w){
     if(!v&&voices.length&&lang==="bn"&&!voiceWarned){voiceWarned=true;toast("এই ফোনে বাংলা ভয়েস পাওয়া যায়নি। সেটিংস থেকে বাংলা টেক্সট-টু-স্পিচ ইনস্টল করুন।")}
     SS.cancel();
     const u=new SpeechSynthesisUtterance(clean);
+    curU=u; /* ব্রাউজার যেন utterance মুছে না ফেলে */
     if(v){u.voice=v;u.lang=v.lang}else u.lang=lang==="bn"?"bn-BD":"en-US";
     u.rate=lang==="bn"?.95:1;u.pitch=1;u.volume=1;
     u.onstart=()=>$("talk").classList.add("on");
     u.onend=u.onerror=()=>$("talk").classList.remove("on");
-    SS.speak(u);
+    setTimeout(()=>{if(curU===u){try{SS.resume&&SS.resume();SS.speak(u)}catch(e){}}},30);
     return true;
   }catch(e){return false}
 }
@@ -746,7 +854,7 @@ function showPop(on){
 function reset(){
   clearInterval(timer);started=false;paused=false;wordErr=false;idx=0;okW=badW=okChars=typedChars=0;left=dur;samples=[];
   stopSpeech();
-  build();paintWc();
+  build();paintWc();preloadWords(0,8);
   $("w0").classList.add("cur");
   $("words").style.transform="translateY(0)";
   $("sTime").textContent=fmt(left);$("sWpm").textContent="0";$("sAcc").textContent="100%";
@@ -797,13 +905,14 @@ function commit(){
     okW++;okChars+=target.length+1;el.classList.add("ok");
     /* শব্দ ঠিক হলে: ভয়েস চালু থাকলে শব্দটি উচ্চারিত হবে, না হলে সাধারণ "correct" সাউন্ড */
     const last=idx+1>=list.length;
-    if(!last&&voiceOn&&SS&&sound){if(!speakWord(target))playCorrect()}
+    if(!last&&voiceOn&&sound){if(!speakWord(target))playCorrect()}
     else if(!last)playCorrect();
   }else{badW++;el.classList.add("bad");if(!wordErr)playError()}
   wordErr=false;
   box.value="";box.classList.remove("err");idx++;
   const next=$("w"+idx);
   if(next){next.classList.add("cur");scrollWords(idx)}
+  preloadWords(idx,8);
   $("sWpm").textContent=nm(wpm());$("sAcc").textContent=nm(acc())+"%";
   bump($("sWpm"));
   paintPop();paintWc();
@@ -897,7 +1006,7 @@ $("pauseBtn").onclick=togglePause;
 $("restart").onclick=reset;
 $("again").onclick=()=>{reset();window.scrollTo({top:0,behavior:"smooth"})};
 document.addEventListener("keydown",e=>{
-  if(e.key==="Tab"){e.preventDefault();$("restart").focus()}
+  if(e.key==="Tab"&&e.target===$("typebox")){e.preventDefault();$("restart").focus()}
   if(e.key==="Escape"&&!$("hist").open)reset();
 });
 
