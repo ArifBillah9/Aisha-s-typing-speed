@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>আয়শা সিদ্দিকা</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#06201d;
+    --deep:#0b3a34;
+    --moss:#1c6b5c;
+    --gold:#e9c46a;
+    --gold-hi:#fff2c4;
+    --gold-lo:#b8862b;
+    --mist:#cfe6df;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:'Siliguri',sans-serif;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 48%, var(--deep) 0%, var(--night) 70%),
+      var(--night);
+    color:var(--mist);
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  canvas#stars{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+
+  /* soft halo that breathes behind the name */
+  .halo{
+    position:absolute;
+    width:min(90vw,820px);
+    aspect-ratio:2/1;
+    border-radius:50%;
+    background:radial-gradient(closest-side, rgba(233,196,106,.22), rgba(233,196,106,0) 70%);
+    filter:blur(10px);
+    opacity:0;
+    animation:haloIn 2.4s ease-out .6s forwards, breathe 6s ease-in-out 3s infinite;
+  }
+  @keyframes haloIn{to{opacity:1}}
+  @keyframes breathe{
+    0%,100%{transform:scale(1);opacity:1}
+    50%{transform:scale(1.08);opacity:.7}
+  }
+
+  .stage{
+    position:relative;
+    text-align:center;
+    padding:0 5vw;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:clamp(14px,3vh,28px);
+  }
+
+  .blessing{
+    font-size:clamp(.95rem,2.4vw,1.25rem);
+    font-weight:400;
+    color:var(--mist);
+    opacity:0;
+    letter-spacing:.04em;
+    animation:fadeUp 1.4s ease-out .2s forwards;
+  }
+
+  h1{
+    font-weight:700;
+    font-size:clamp(3.2rem,13vw,9rem);
+    line-height:1.25;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    column-gap:.28em;
+  }
+
+  /* each word reveals from blur, then carries a travelling gold shimmer */
+  .word{
+    display:inline-block;
+    opacity:0;
+    transform:translateY(.35em) scale(.94);
+    filter:blur(16px);
+    background:linear-gradient(100deg,
+      var(--gold-lo) 0%, var(--gold) 30%, var(--gold-hi) 50%, var(--gold) 70%, var(--gold-lo) 100%);
+    background-size:250% 100%;
+    background-position:100% 0;
+    -webkit-background-clip:text;
+            background-clip:text;
+    -webkit-text-fill-color:transparent;
+            color:transparent;
+    animation:
+      reveal 1.8s cubic-bezier(.2,.7,.2,1) forwards,
+      shimmer 5s ease-in-out infinite;
+    text-shadow:none;
+  }
+  .word:nth-child(1){animation-delay:.9s, 3.2s}
+  .word:nth-child(2){animation-delay:1.5s, 3.6s}
+
+  @keyframes reveal{
+    to{opacity:1;transform:none;filter:blur(0)}
+  }
+  @keyframes shimmer{
+    0%{background-position:100% 0}
+    55%,100%{background-position:-60% 0}
+  }
+
+  /* ornament: a line that draws itself outward from the center with a diamond */
+  .ornament{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    width:min(70vw,460px);
+    opacity:0;
+    animation:fadeUp 1s ease-out 2.6s forwards;
+  }
+  .ornament i{
+    flex:1;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--gold));
+    transform:scaleX(0);
+    animation:draw 1.6s ease-out 2.7s forwards;
+  }
+  .ornament i:first-child{transform-origin:right}
+  .ornament i:last-child{
+    background:linear-gradient(270deg, transparent, var(--gold));
+    transform-origin:left;
+  }
+  .ornament b{
+    width:10px;height:10px;
+    background:var(--gold);
+    transform:rotate(45deg) scale(0);
+    animation:pop .9s cubic-bezier(.3,1.6,.5,1) 3s forwards, spin 14s linear 4s infinite;
+  }
+  @keyframes draw{to{transform:scaleX(1)}}
+  @keyframes pop{to{transform:rotate(45deg) scale(1)}}
+  @keyframes spin{to{transform:rotate(405deg) scale(1)}}
+
+  .sub{
+    font-size:clamp(.9rem,2.2vw,1.15rem);
+    color:var(--mist);
+    opacity:0;
+    letter-spacing:.06em;
+    animation:fadeUp 1.4s ease-out 3.3s forwards;
+  }
+
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(12px)}
+    to{opacity:.85;transform:none}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important}
+    canvas#stars{display:none}
+  }
+
+  /* ---------- clickable name ---------- */
+  .name-btn{cursor:pointer;border-radius:24px;outline:none;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+  .name-btn:hover{transform:scale(1.025)}
+  .name-btn:focus-visible{box-shadow:0 0 0 2px var(--gold)}
+  .hint{
+    font-size:clamp(.8rem,1.9vw,1rem);
+    color:var(--gold);
+    opacity:0;
+    animation:hintIn 1s ease-out 4.2s forwards, hintPulse 3.2s ease-in-out 5.2s infinite;
+  }
+  @keyframes hintIn{to{opacity:.8}}
+  @keyframes hintPulse{0%,100%{opacity:.8}50%{opacity:.35}}
+
+  /* ---------- biography modal ---------- */
+  .overlay{
+    position:fixed;inset:0;z-index:20;
+    display:flex;align-items:center;justify-content:center;
+    padding:max(14px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom));
+    background:rgba(3,14,12,.78);
+    backdrop-filter:blur(6px);
+    opacity:0;visibility:hidden;
+    transition:opacity .45s ease, visibility 0s linear .45s;
+  }
+  .overlay.open{opacity:1;visibility:visible;transition:opacity .45s ease}
+  .sheet{
+    position:relative;
+    width:min(760px,100%);
+    max-height:100%;
+    display:flex;flex-direction:column;
+    background:linear-gradient(180deg,#0e4a41 0%,#082b27 100%);
+    border:1px solid rgba(233,196,106,.45);
+    border-radius:20px;
+    box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 0 60px rgba(233,196,106,.06);
+    transform:translateY(34px) scale(.96);
+    transition:transform .6s cubic-bezier(.2,.8,.2,1);
+  }
+  .overlay.open .sheet{transform:none}
+  .sheet-head{
+    padding:26px 56px 18px 28px;
+    border-bottom:1px solid rgba(233,196,106,.25);
+  }
+  .sheet-head h2{
+    font-size:clamp(1.5rem,5vw,2.1rem);font-weight:700;line-height:1.35;color:var(--gold);
+  }
+  .sheet-head p{margin-top:4px;font-size:.98rem;color:var(--mist);opacity:.9}
+  .close{
+    position:absolute;top:14px;right:14px;
+    width:38px;height:38px;border-radius:50%;
+    border:1px solid rgba(233,196,106,.5);
+    background:transparent;color:var(--gold);
+    font:inherit;font-size:1.3rem;line-height:1;cursor:pointer;
+    transition:background .25s,color .25s,transform .35s;
+  }
+  .close:hover{background:var(--gold);color:var(--night);transform:rotate(90deg)}
+  .close:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
+  .sheet-body{
+    overflow-y:auto;padding:22px 28px 30px;
+    font-size:1.08rem;line-height:1.95;color:#e3f1ec;
+    scrollbar-width:thin;scrollbar-color:var(--gold-lo) transparent;
+  }
+  .sheet-body h3{
+    margin:26px 0 8px;font-size:1.25rem;font-weight:600;color:var(--gold);
+  }
+  .sheet-body p{margin-bottom:10px}
+  .facts{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:6px 0 4px;
+  }
+  .fact{
+    padding:10px 14px;border-radius:12px;
+    background:rgba(233,196,106,.07);
+    border:1px solid rgba(233,196,106,.2);
+    line-height:1.6;
+  }
+  .fact span{display:block;font-size:.88rem;color:var(--gold);opacity:.9}
+  .timeline{list-style:none;margin:10px 0 0;border-right:0;border-left:2px solid rgba(233,196,106,.35);padding-left:18px}
+  .timeline li{position:relative;margin-bottom:16px}
+  .timeline li::before{
+    content:"";position:absolute;left:-25px;top:.8em;width:10px;height:10px;
+    background:var(--gold);transform:rotate(45deg);
+  }
+  .timeline b{display:block;color:var(--gold);font-weight:600}
+  .note{
+    margin-top:24px;padding-top:14px;border-top:1px solid rgba(233,196,106,.2);
+    font-size:.92rem;line-height:1.8;color:var(--mist);opacity:.8;
+  }
+  /* staggered fade-in of sheet sections when opened */
+  .overlay.open .sheet-body > *{animation:secIn .7s ease-out both}
+  .overlay.open .sheet-body > *:nth-child(1){animation-delay:.25s}
+  .overlay.open .sheet-body > *:nth-child(2){animation-delay:.33s}
+  .overlay.open .sheet-body > *:nth-child(3){animation-delay:.41s}
+  .overlay.open .sheet-body > *:nth-child(4){animation-delay:.49s}
+  .overlay.open .sheet-body > *:nth-child(5){animation-delay:.57s}
+  .overlay.open .sheet-body > *:nth-child(n+6){animation-delay:.65s}
+  @keyframes secIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="halo" aria-hidden="true"></div>
+
+<main class="stage">
+  <p class="blessing">রাদিয়াল্লাহু আনহা</p>
+  <div class="name-btn" id="nameBtn" role="button" tabindex="0" aria-haspopup="dialog" aria-label="আয়শা সিদ্দিকা — জীবনী দেখতে ক্লিক করুন">
+    <h1>
+      <span class="word" aria-hidden="true">আয়শা</span>
+      <span class="word" aria-hidden="true">সিদ্দিকা</span>
+    </h1>
+  </div>
+  <div class="ornament" aria-hidden="true"><i></i><b></b><i></i></div>
+  <p class="sub">উম্মুল মু’মিনীন</p>
+  <p class="hint">জীবনী পড়তে নামে ক্লিক করুন</p>
+</main>
+
+
+<div class="overlay" id="bio" aria-hidden="true">
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="bioTitle">
+    <button class="close" id="bioClose" aria-label="বন্ধ করুন">&times;</button>
+    <header class="sheet-head">
+      <h2 id="bioTitle">হযরত আয়শা সিদ্দিকা (রাঃ)</h2>
+      <p>উম্মুল মু’মিনীন · নবী করীম (সাঃ)-এর প্রিয়তমা স্ত্রী</p>
+    </header>
+    <div class="sheet-body" id="bioBody" tabindex="0">
+      <p>হযরত আয়শা সিদ্দিকা (রাঃ) ছিলেন ইসলামের প্রথম খলিফা হযরত আবু বকর সিদ্দিক (রাঃ)-এর কন্যা এবং আল্লাহর রাসূল মুহাম্মাদ (সাঃ)-এর স্ত্রী। তিনি ছিলেন উম্মতের সবচেয়ে বড় আলেমা ও ফকীহ সাহাবীদের একজন, যাঁর কাছ থেকে উম্মত দ্বীনের এক বিশাল জ্ঞানভাণ্ডার পেয়েছে।</p>
+
+      <div class="facts">
+        <div class="fact"><span>পিতা</span>হযরত আবু বকর সিদ্দিক (রাঃ)</div>
+        <div class="fact"><span>মাতা</span>হযরত উম্মে রুমান (রাঃ)</div>
+        <div class="fact"><span>জন্ম</span>মক্কা, আনুমানিক ৬১৪ খ্রিষ্টাব্দ</div>
+        <div class="fact"><span>উপাধি ও কুনিয়াত</span>সিদ্দিকা, হুমাইরা, উম্মে আব্দুল্লাহ</div>
+        <div class="fact"><span>ইন্তেকাল</span>১৭ রমজান, ৫৮ হিজরি, মদিনা</div>
+        <div class="fact"><span>দাফন</span>জান্নাতুল বাকী, মদিনা</div>
+      </div>
+
+      <h3>জীবনের গুরুত্বপূর্ণ ঘটনা</h3>
+      <ul class="timeline">
+        <li><b>শৈশব ও পরিবার</b>ইসলামের শুরুর যুগে মক্কায় এমন এক পরিবারে বেড়ে ওঠেন, যে পরিবারের পিতা-মাতা দু’জনই ছিলেন প্রথম দিকের মুসলিমদের অন্তর্ভুক্ত।</li>
+        <li><b>বিবাহ — নবুওয়াতের ১০ম বছর</b>হযরত খাদিজা (রাঃ)-এর ইন্তেকালের পর শাওয়াল মাসে মক্কায় নবী (সাঃ)-এর সঙ্গে তাঁর বিবাহ হয়। সহীহ বুখারীর বর্ণনা অনুযায়ী তখন তাঁর বয়স ছিল ছয় বছর এবং স্বামীগৃহে যাওয়ার সময় নয় বছর।</li>
+        <li><b>মদিনায় নবীজীর ঘরে</b>হিজরতের পর মদিনায় তিনি নবী (সাঃ)-এর হুজরায় আসেন। প্রায় নয় বছর তিনি নবীজীর সান্নিধ্যে থেকে তাঁর কথা, কাজ ও আচরণ সরাসরি দেখেছেন ও মনে রেখেছেন।</li>
+        <li><b>তায়াম্মুমের বিধান</b>এক সফরে তাঁর হার হারিয়ে গেলে তা খুঁজতে কাফেলাকে থামতে হয়। পানি না থাকায় সেই সময়ই তায়াম্মুমের বিধান নাযিল হয়। উসাইদ ইবনে হুযাইর (রাঃ) তখন বলেছিলেন, এটি আবু বকর পরিবারের প্রথম বরকত নয়।</li>
+        <li><b>ইফকের ঘটনা — ৬ষ্ঠ হিজরি</b>মুনাফিকরা তাঁর বিরুদ্ধে মিথ্যা অপবাদ ছড়ায়। তিনি ধৈর্য ধরেন এবং আল্লাহর ওপর ভরসা রাখেন। শেষে সূরা নূরের ১১ থেকে ২০ নম্বর আয়াতে আল্লাহ তাআলা স্বয়ং তাঁর পবিত্রতা ঘোষণা করেন।</li>
+        <li><b>নবীজীর ইন্তেকাল — ১১ হিজরি</b>নবী (সাঃ) অসুস্থতার শেষ দিনগুলো তাঁর ঘরে কাটান এবং তাঁর কোলে মাথা রেখে ইন্তেকাল করেন। সেই হুজরাতেই নবীজীকে দাফন করা হয়।</li>
+        <li><b>খুলাফায়ে রাশেদীনের যুগ</b>পিতা আবু বকর (রাঃ) ও পরবর্তী খলিফাদের সময়ে তিনি ছিলেন ইলম ও ফতোয়ার কেন্দ্র। বড় বড় সাহাবীরাও জটিল মাসআলায় তাঁর কাছে জানতে আসতেন।</li>
+        <li><b>জঙ্গে জামাল — ৩৬ হিজরি</b>হযরত উসমান (রাঃ)-এর শাহাদাতের বিচার ও উম্মতের ঐক্যের জন্য তিনি বসরার পথে বের হন। যুদ্ধের পর তিনি মদিনায় ফিরে আসেন এবং বাকি জীবন ইলম ও ইবাদতে কাটান।</li>
+        <li><b>ইন্তেকাল — ৫৮ হিজরি</b>রমজান মাসে মদিনায় তিনি ইন্তেকাল করেন। তাঁর অসিয়ত অনুযায়ী রাতে জান্নাতুল বাকীতে তাঁকে দাফন করা হয়।</li>
+      </ul>
+
+      <h3>ইলম ও অবদান</h3>
+      <p>তিনি প্রায় ২২১০টি হাদীস বর্ণনা করেছেন বলে প্রসিদ্ধ। হাদীস বর্ণনাকারী সাহাবীদের মধ্যে তিনি প্রথম সারির একজন। বিশেষ করে নারীদের মাসায়েল, পারিবারিক জীবন, ইবাদত ও নবীজীর ব্যক্তিগত জীবন সম্পর্কে অনেক হাদীস কেবল তাঁর মাধ্যমেই উম্মতের কাছে পৌঁছেছে।</p>
+      <p>তাঁর ভাগ্নে উরওয়া ইবনে যুবায়ের (রহঃ), কাসিম ইবনে মুহাম্মাদ (রহঃ) সহ অনেক তাবেয়ী তাঁর কাছ থেকে ইলম অর্জন করেছেন। তাঁর ঘর ছিল জ্ঞানপিপাসুদের আশ্রয়স্থল।</p>
+
+      <h3>মর্যাদা</h3>
+      <p>সহীহ বুখারী ও মুসলিমের হাদীসে এসেছে, নবী (সাঃ) অন্যান্য নারীদের ওপর আয়শা (রাঃ)-এর মর্যাদাকে সব খাবারের মধ্যে সারীদের শ্রেষ্ঠত্বের সঙ্গে তুলনা করেছেন। আল্লাহ তাআলা কুরআনে তাঁকে এবং নবীজীর অন্য স্ত্রীদেরকে মুমিনদের মা বলে সম্বোধন করেছেন।</p>
+
+      <p class="note">এই লেখাটি প্রসিদ্ধ সীরাত ও হাদীস গ্রন্থের আলোকে সংক্ষেপে লেখা হয়েছে। জন্ম-মৃত্যু ও বয়সসহ কিছু তথ্যে আলেমদের মধ্যে মতভেদ আছে। বিস্তারিত জানতে নির্ভরযোগ্য সীরাত গ্রন্থ ও আলেমদের শরণাপন্ন হোন।</p>
+    </div>
+  </section>
+</div>
+
+<script>
+/* a small field of slowly drifting gold dust */
+(function(){
+  var c = document.getElementById('stars');
+  if(!c || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var x = c.getContext('2d'), w, h, dots = [], dpr = Math.min(devicePixelRatio||1, 2);
+
+  function size(){
+    w = c.width = innerWidth * dpr;
+    h = c.height = innerHeight * dpr;
+  }
+  function seed(){
+    dots = [];
+    var n = Math.round(innerWidth * innerHeight / 22000);
+    for(var i=0;i<n;i++){
+      dots.push({
+        x:Math.random()*w, y:Math.random()*h,
+        r:(Math.random()*1.4+.4)*dpr,
+        vy:-(Math.random()*.18+.04)*dpr,
+        p:Math.random()*6.28,
+        s:Math.random()*.012+.004
+      });
+    }
+  }
+  function tick(){
+    x.clearRect(0,0,w,h);
+    for(var i=0;i<dots.length;i++){
+      var d = dots[i];
+      d.y += d.vy; d.p += d.s;
+      if(d.y < -5) { d.y = h + 5; d.x = Math.random()*w; }
+      var a = .15 + .45*Math.abs(Math.sin(d.p));
+      x.beginPath();
+      x.fillStyle = 'rgba(233,196,106,'+a.toFixed(3)+')';
+      x.arc(d.x, d.y, d.r, 0, 6.283);
+      x.fill();
+    }
+    requestAnimationFrame(tick);
+  }
+  size(); seed(); tick();
+  addEventListener('resize', function(){ size(); seed(); });
+})();
+
+/* biography modal */
+(function(){
+  var btn=document.getElementById('nameBtn'),
+      ov=document.getElementById('bio'),
+      cl=document.getElementById('bioClose'),
+      body=document.getElementById('bioBody');
+  function open(){
+    ov.classList.add('open');
+    ov.setAttribute('aria-hidden','false');
+    body.scrollTop=0;
+    setTimeout(function(){cl.focus()},60);
+  }
+  function close(){
+    ov.classList.remove('open');
+    ov.setAttribute('aria-hidden','true');
+    btn.focus();
+  }
+  btn.addEventListener('click',open);
+  btn.addEventListener('keydown',function(e){
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}
+  });
+  cl.addEventListener('click',close);
+  ov.addEventListener('click',function(e){if(e.target===ov)close();});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&ov.classList.contains('open'))close();
+  });
+})();
+</script>
+</body>
+</html>
